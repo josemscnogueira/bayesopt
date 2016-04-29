@@ -30,7 +30,7 @@ namespace bayesopt
  *  Description: Constructor                                                                      *
  *  Class      : TGPNode                                                                          *
  **************************************************************************************************/
-TGPNode::TGPNode(tgp_parameters& tgp_params, bopt_params& params, randEngine& eng, Dataset& data, MeanModel& mean)
+TGPNode::TGPNode(TgpParameters& tgp_params, Parameters& params, randEngine& eng, Dataset& data, MeanModel& mean)
 :
 tgpparams (tgp_params   ),
 parameters(params       ),
@@ -433,11 +433,7 @@ bool TGPNode::isEqual(TGPNode* node)
             {
                 return false;
             }
-        }
 
-        // Check if right child is equal
-        if ( ( _r_child != NULL ) && ( _r_child != NULL ) )
-        {
             if ( _r_child -> isEqual(node -> _r_child) == false)
             {
                 return false;
@@ -785,17 +781,17 @@ void TGPNode::setCriteria(void)
             _crit.push_back(mcfactory.create(parameters.crit_name, &_gp[index]));
             _crit[index].setRandomEngine(engine);
 
-            if (_crit[index].nParameters() == parameters.n_crit_params)
+            if (_crit[index].nParameters() == parameters.crit_params.size())
             {
-                _crit[index].setParameters(utils::array2vector(parameters.crit_params, parameters.n_crit_params));
+                _crit[index].setParameters(parameters.crit_params);
             }
             else
             {
-                if (parameters.n_crit_params != 0)
+                if (parameters.crit_params.size() != 0)
                 {
                     FILE_LOG(logERROR) << "Expected " << _crit[index].nParameters()
                                        << " parameters. Got "
-                                       << parameters.n_crit_params << " instead.";
+                                       << parameters.crit_params.size() << " instead.";
                 }
 
                 FILE_LOG(logERROR)     << "Using default parameters for criteria.";

@@ -1,17 +1,17 @@
 /**  \file parameters.h \brief Parameter definitions. */
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -40,7 +40,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif 
+#endif
 
   /*-----------------------------------------------------------*/
   /* Configuration parameters                                  */
@@ -77,7 +77,12 @@ extern "C" {
     size_t n_coef;               /**< Number of mean funct. hyperparameters */
   } mean_parameters;
 
-  /** \brief Configuration parameters 
+  typedef struct {
+    double noise[256];           /**< Basis function coefficients (mean) */
+    size_t n_coef;               /**< Number of mean funct. hyperparameters */
+} input_parameters;
+
+  /** \brief Configuration parameters
    *  @see \ref reference for a full description of the parameters
    */
   typedef struct {
@@ -88,8 +93,8 @@ extern "C" {
 
     /** Sampling method for initial set 1-LHS, 2-Sobol (if available),
      *  other value-uniformly distributed */
-    size_t init_method;          
-    int random_seed;             /**< >=0 -> Fixed seed, <0 -> Time based (variable). */    
+    size_t init_method;
+    int random_seed;             /**< >=0 -> Fixed seed, <0 -> Time based (variable). */
 
     int verbose_level;           /**< Neg-Error,0-Warning,1-Info,2-Debug -> stdout
 				      3-Error,4-Warning,5-Info,>5-Debug -> logfile*/
@@ -101,13 +106,13 @@ extern "C" {
     char* save_filename;          /**< Sava data file path (if applicable) */
 
     char* surr_name;             /**< Name of the surrogate function */
-    double sigma_s;              /**< Signal variance (if known). 
+    double sigma_s;              /**< Signal variance (if known).
 				    Used in GaussianProcess and GaussianProcessNormal */
     double noise;                /**< Variance of observation noise (and nugget) */
 
-    double alpha;                /**< Inverse Gamma prior for signal var. 
+    double alpha;                /**< Inverse Gamma prior for signal var.
 				    Used in StudentTProcessNIG */
-    double beta;                 /**< Inverse Gamma prior for signal var. 
+    double beta;                 /**< Inverse Gamma prior for signal var.
 				    Used in StudentTProcessNIG */
 
     score_type sc_type;          /**< Score type for kernel hyperparameters (ML,MAP,etc) */
@@ -115,21 +120,22 @@ extern "C" {
     int l_all;                   /**< Learn all hyperparameters or only kernel */
 
     double epsilon;              /**< For epsilon-greedy exploration */
-    size_t force_jump;           /**< If >0, and the difference between two 
-				    consecutive observations is pure noise, 
-				    for n consecutive steps, force a random 
-				    jump. Avoid getting stuck if model is bad 
-				    and there is few data, however, it might 
+    size_t force_jump;           /**< If >0, and the difference between two
+				    consecutive observations is pure noise,
+				    for n consecutive steps, force a random
+				    jump. Avoid getting stuck if model is bad
+				    and there is few data, however, it might
 				    reduce the accuracy. */
 
     kernel_parameters kernel;    /**< Kernel parameters */
     mean_parameters mean;        /**< Mean (parametric function) parameters */
+    input_parameters input;      /**< Input noise                parameters */
 
     char* crit_name;             /**< Name of the criterion */
     double crit_params[128];     /**< Criterion hyperparameters (if needed) */
     size_t n_crit_params;        /**< Number of criterion hyperparameters */
   } bopt_params;
-						    
+
   /*-----------------------------------------------------------*/
   /* These functions are added to simplify wrapping code       */
   /*-----------------------------------------------------------*/
@@ -153,7 +159,7 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif 
+#endif
 
 
 #endif

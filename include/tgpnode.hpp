@@ -23,7 +23,6 @@
 #include "criteria_functors.hpp"
 #include "datasetdist.hpp"
 #include "meanmodeldist.hpp"
-#include "tgpparameters.h"
 
 
 /**************************************************************************************************
@@ -62,8 +61,8 @@ public:
 
 
     // Constructors
-    TGPNode(tgp_parameters& tgp_params, bopt_params& params      , randEngine& eng , Dataset& data   , MeanModel& mean);
-    TGPNode(TGPNode* parent           , std::vector<uint>& owned , bool        side, uint     feature, double     threshold);
+    TGPNode(TgpParameters& tgp_params, Parameters& params      , randEngine& eng , Dataset& data   , MeanModel& mean);
+    TGPNode(TGPNode* parent          , std::vector<uint>& owned, bool        side, uint     feature, double     threshold);
 
     // Destructor
     ~TGPNode(void);
@@ -117,8 +116,8 @@ protected:
 
 private:
     // Object Referenfes
-    tgp_parameters&                                   tgpparams;
-    bopt_params&                                      parameters;
+    TgpParameters&                                    tgpparams;
+    Parameters&                                       parameters;
     randEngine&                                       engine;
 
     // Node Attributes

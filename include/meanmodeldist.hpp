@@ -47,7 +47,7 @@ public:
     vectord             muTimesFeat  (void                 );
     double              muTimesFeat  (const vectord&  x    );
     void                setMean      (const vectord&  muv  , const vectord& smu, std::string m_name, size_t dim);
-    void                setMean      (mean_parameters mean , size_t         dim);
+    void                setMean      (MeanParameters mean  , size_t         dim);
 
     // Methods (new)
     matrixd             getmFeatM    (void);
@@ -76,7 +76,7 @@ inline vectord             MeanModelDist::muTimesFeat  (void                    
 inline double              MeanModelDist::muTimesFeat  (const vectord& x                  ) { return boost::numeric::ublas::inner_prod(_alldata -> getmMu(), _alldata -> getFeatures(x)); }
 
 inline void                MeanModelDist::setMean      (const vectord&  muv  , const vectord& smu, std::string m_name, size_t dim) { _alldata -> setMean(muv, smu, m_name, dim); }
-inline void                MeanModelDist::setMean      (mean_parameters mean , size_t         dim                                ) { _alldata -> setMean(mean, dim            ); }
+inline void                MeanModelDist::setMean      (MeanParameters mean  , size_t         dim                                ) { _alldata -> setMean(mean, dim            ); }
 inline uint                MeanModelDist::getNSamples  (void                              ) { return _owned.size(); };
 
 } //namespace bayesopt

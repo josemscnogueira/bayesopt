@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
    Copyright (C) 2011 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
@@ -18,18 +18,36 @@
 */
 
 #include "ublas_extra.hpp"
+#include <stdexcept>
 
 
 namespace bayesopt
 {
   namespace utils
   {
-    boost::numeric::ublas::vector<double> array2vector(const double array[], 
+    boost::numeric::ublas::vector<double> array2vector(const double array[],
 						       const size_t n)
     {
       boost::numeric::ublas::vector<double> v(n);
       std::copy(array, array+n, v.begin());
       return v;
+    }
+
+    boost::numeric::ublas::matrix<double> array2matrix(const double array[],
+                               const size_t n)
+    {
+        // Determine Matrix size
+        size_t matrix_size = sqrt(n);
+
+        // Check if array size correponds to a perfect square matrix
+        if ( matrix_size != sqrt(n) ) throw std::length_error("Array size does not correspond to a perfect square");
+
+        // Copy data from array to matrix
+        boost::numeric::ublas::matrix<double> m(matrix_size,matrix_size);
+        std::copy(array, array+n, m.data().begin());
+
+        // Return ublas::matrix
+        return m;
     }
 
   } //  namespace utils

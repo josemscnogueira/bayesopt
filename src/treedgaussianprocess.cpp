@@ -24,7 +24,7 @@ namespace bayesopt
  *  Description: Constructor                                                                      *
  *  Class      : TGPNode                                                                          *
  **************************************************************************************************/
-TreedGaussianProcess::TreedGaussianProcess(tgp_parameters& tgp_params, bopt_params& params, randEngine& eng)
+TreedGaussianProcess::TreedGaussianProcess(TgpParameters& tgp_params, Parameters& params, randEngine& eng)
 :
 PosteriorModel(tgp_params.dimensions,params,eng),
 tgpparams     (tgp_params                      ),

@@ -2,7 +2,7 @@
 /*
 -----------------------------------------------------------------------------
    Copyright (C) 2011 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +23,7 @@
 
 #include <typeinfo>
 #include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 namespace bayesopt
 {
@@ -34,7 +35,7 @@ namespace bayesopt
     {
       typedef typename V::value_type VD;
       assert(typeid(VD) == typeid(D));
-      
+
       // This method is super inefficient but there seems to be the uBlas style.
       const size_t size = vect.size();
       vect.resize(size+1,true);
@@ -46,10 +47,10 @@ namespace bayesopt
     {
       typedef typename V::iterator VI;
       assert(typeid(VI) == typeid(I));
-     
+
       for(VI it = begin; it != vect.end()-1; ++it)
 	{
-	  *it = *(it+1); 
+	  *it = *(it+1);
 	}
       vect.resize(vect.size()-1);
     };
@@ -76,8 +77,11 @@ namespace bayesopt
 	}
     };
 
-    boost::numeric::ublas::vector<double> array2vector(const double array[], 
+    boost::numeric::ublas::vector<double> array2vector(const double array[],
 						       const size_t n);
+
+    boost::numeric::ublas::matrix<double> array2matrix(const double array[],
+                               const size_t n);
 
   } //  namespace utils
 } //namespace bayesopt

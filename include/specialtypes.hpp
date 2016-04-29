@@ -1,17 +1,17 @@
 /**  \file specialtypes.hpp \brief Boost vector and matrix types */
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -35,6 +35,7 @@ typedef boost::numeric::ublas::zero_vector<double>             zvectord;
 typedef boost::numeric::ublas::scalar_vector<double>           svectord;
 typedef boost::numeric::ublas::matrix<double>                   matrixd;
 typedef boost::numeric::ublas::zero_matrix<double>             zmatrixd;
+typedef boost::numeric::ublas::identity_matrix<double>         imatrixd;
 
 typedef std::vector<vectord>                                   vecOfvec;
 
@@ -43,8 +44,8 @@ typedef std::vector<vectord>                                   vecOfvec;
 // might change in the future.
 typedef boost::numeric::ublas::matrix<double>                 covMatrix;
 
-// typedef boost::numeric::ublas::bounded_matrix<double, MAX_ITERATIONS, 
-//                                            MAX_ITERATIONS> covMatrix; 
+// typedef boost::numeric::ublas::bounded_matrix<double, MAX_ITERATIONS,
+//                                            MAX_ITERATIONS> covMatrix;
 
 // typedef boost::numeric::ublas::symmetric_matrix<double,lower,row_major,
 //                          bounded_array<double,90000> >       covMatrix;
