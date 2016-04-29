@@ -116,24 +116,31 @@ namespace bayesopt
   class MeanModel
   {
   public:
+    MeanModel(){};
     MeanModel(size_t dim, Parameters parameters);
     virtual ~MeanModel() {};
 
-    ParametricFunction* getMeanFunc();
+    virtual ParametricFunction* getMeanFunc();
    
-    void setParameters(const vectord &theta);
-    vectord getParameters();
-    size_t nParameters();
+    virtual void setParameters(const vectord &theta);
+    virtual vectord getParameters();
+    virtual size_t nParameters();
 
-    vectord getFeatures(const vectord& x);  
-    void getFeatures(const vectord& x, vectord& kx);  
-    size_t nFeatures();
+    virtual vectord getFeatures(const vectord& x);  
+    virtual void getFeatures(const vectord& x, vectord& kx);  
+    virtual size_t nFeatures();
 
-    void setPoints(const vecOfvec &x);
-    void addNewPoint(const vectord &x);
+    virtual void setPoints(const vecOfvec &x);
+    virtual void addNewPoint(const vectord &x);
 
-    vectord muTimesFeat();
-    double muTimesFeat(const vectord& x);
+    // NEW METHODS
+    virtual vectord getmMu(void);
+    virtual matrixd getmFeatM(void);
+    virtual uint    getNSamples(void);
+    // NEW METHODS
+
+    virtual vectord muTimesFeat();
+    virtual double muTimesFeat(const vectord& x);
 
     /** 
      * \brief Select the parametric part of the surrogate process.
@@ -144,11 +151,11 @@ namespace bayesopt
      * @param dim number of input dimensions
      * @return error_code
      */
-    void setMean (const vectord &muv, const vectord &smu, 
+    virtual void setMean (const vectord &muv, const vectord &smu, 
 		 std::string m_name, size_t dim);
 
     /** Wrapper of setMean for the C++ structure */
-    void setMean (MeanParameters mean, size_t dim);
+    virtual void setMean (MeanParameters mean, size_t dim);
 
     matrixd mFeatM;           ///< Value of the mean features at the input points
 
@@ -186,7 +193,7 @@ namespace bayesopt
   { 
     using boost::numeric::ublas::column;
     
-    mFeatM.resize(mFeatM.size1(),mFeatM.size2()+1);  
+    mFeatM.resize(mFeatM.size1(),mFeatM.size2()+1);
     column(mFeatM,mFeatM.size2()-1) = mMean->getFeatures(x);
   }
 
@@ -195,6 +202,15 @@ namespace bayesopt
     
   inline double MeanModel::muTimesFeat(const vectord& x)
   { return boost::numeric::ublas::inner_prod(mMu,mMean->getFeatures(x));}
+
+  inline matrixd MeanModel::getmFeatM(void)
+  { return mFeatM; }
+
+  inline vectord MeanModel::getmMu(void)
+  { return mMu; }
+
+  inline uint MeanModel::getNSamples(void)
+  { return mFeatM.size2(); }
 
 
 

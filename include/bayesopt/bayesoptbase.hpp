@@ -129,13 +129,13 @@ namespace bayesopt {
      * \brief Execute ONE step the optimization process of the
      * function defined in evaluateSample.  
      */  
-    void stepOptimization();
+    virtual void stepOptimization();
 
     /** Initialize the optimization process.  */
-    void initializeOptimization();
+    virtual void initializeOptimization();
     
     /** Once the optimization has been perfomed, return the optimal point. */
-    vectord getFinalResult();
+    virtual vectord getFinalResult();
 
     /** Saves the current state of the optimization process into a state class. */
     void saveOptimization(BOptState &state);

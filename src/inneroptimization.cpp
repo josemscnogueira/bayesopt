@@ -79,6 +79,11 @@ namespace bayesopt
 			   << "In general, this can be ignored.";
       }
 
+    catch (std::runtime_error &e)
+      {
+  throw e;
+      }
+
     std::copy(xstd.begin(),xstd.end(),Xnext.begin());
     return fmin;
   }
@@ -208,8 +213,15 @@ namespace bayesopt
 				    "(gradient/no gradient)");
       }
 
+    try
+    {
     fmin = run_nlopt(algo,fpointer,Xnext,maxf1,
 		     mDown,mUp,objPointer);
+    }
+    catch (std::runtime_error &e)
+    {
+      throw e;
+    }
 
     FILE_LOG(logDEBUG) << "1st opt " << maxf1 << "-> " << Xnext 
 		       << " f() ->" << fmin;
@@ -221,10 +233,16 @@ namespace bayesopt
 	    if (Xnext(i)-mDown[i] < 0.0001) Xnext(i) += 0.0001;
 	    if (mUp[i] - Xnext(i) < 0.0001) Xnext(i) -= 0.0001;
 	  }
-
+  try
+  {
 	fmin = run_nlopt(nlopt::LN_BOBYQA,fpointer,Xnext,maxf2,
 			 mDown,mUp,objPointer);
-	FILE_LOG(logDEBUG) << "2nd opt " << maxf2 << "-> " << Xnext 
+	}
+  catch (std::runtime_error &e)
+  {
+    throw e;
+  }
+  FILE_LOG(logDEBUG) << "2nd opt " << maxf2 << "-> " << Xnext 
 			   << " f() ->" << fmin;
       }
 

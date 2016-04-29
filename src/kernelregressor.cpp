@@ -79,8 +79,21 @@ namespace bayesopt
   {
     const size_t nSamples = mData.getNSamples();
     matrixd corrMatrix(nSamples,nSamples);
-    mKernel.computeDerivativeCorrMatrix(mData.mX,corrMatrix,dth_index);
+    mKernel.computeDerivativeCorrMatrix(mData.getSamplesX(),corrMatrix,dth_index);
     return corrMatrix;
+  }
+
+  matrixd KernelRegressor::calculateCorrMatrix(vecOfvec x)
+  {
+    const size_t  nSamples = x.size();
+          matrixd corrMatrix(nSamples,nSamples);
+    mKernel.computeCorrMatrix(x, corrMatrix, mRegularizer);
+    return corrMatrix;
+  }
+
+  double KernelRegressor::getKernelPrior(void)
+  {
+    return mKernel.kernelLogPrior();
   }
 
 } //namespace bayesopt

@@ -44,11 +44,11 @@ SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
-option(BAYESOPT_BUILD_EXAMPLES "Build examples and demos?" ON)
+option(BAYESOPT_BUILD_EXAMPLES "Build examples and demos?" OFF)
 option(BAYESOPT_BUILD_TESTS "Build tests?" OFF)
 option(BAYESOPT_PYTHON_INTERFACE "Build Python interface?" OFF)
-option(BAYESOPT_MATLAB_COMPATIBLE "Build library compatible with Matlab?" ON)
-option(BAYESOPT_BUILD_SOBOL "Build support for Sobol sequences?" ON)
+option(BAYESOPT_MATLAB_COMPATIBLE "Build library compatible with Matlab?" OFF)
+option(BAYESOPT_BUILD_SOBOL "Build support for Sobol sequences?" OFF)
 option(BAYESOPT_BUILD_SHARED "Build BayesOpt as a shared library?" OFF)
 
 find_package( Boost REQUIRED )
@@ -91,9 +91,11 @@ SET( BAYESOPT_SRCS
   ./src/posterior_fixed.cpp
   ./src/posterior_empirical.cpp
   ./src/posterior_mcmc.cpp
+  ./src/learningqueue.cpp
   ./src/mcmc_sampler.cpp
   ./src/inneroptimization.cpp
   ./src/dataset.cpp
+  ./src/datasetdist.cpp
   ./src/nonparametricprocess.cpp
   ./src/kernelregressor.cpp
   ./src/conditionalbayesprocess.cpp
@@ -107,9 +109,13 @@ SET( BAYESOPT_SRCS
   ./src/kernel_functors.cpp
   ./src/criteria_functors.cpp
   ./src/criteria_hedge.cpp
+  ./src/criteria_uei.cpp
   ./src/mean_functors.cpp
+  ./src/meanmodeldist.cpp
   ./src/gauss_distribution.cpp
   ./src/student_t_distribution.cpp
+  ./src/tgpnode.cpp
+  ./src/treedgaussianprocess.cpp
   )
 
 SET(UTILS_SRC

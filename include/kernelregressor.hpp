@@ -29,6 +29,7 @@
 #include "ublas_cholesky.hpp"
 #include "nonparametricprocess.hpp"
 #include "kernel_functors.hpp"
+#include "specialtypes.hpp"
 
 namespace bayesopt
 {
@@ -74,6 +75,10 @@ namespace bayesopt
     size_t nHyperParameters();
     vectord getHyperParameters();
     void setHyperParameters(const vectord& theta);
+
+    // NEW zenogueira methods
+    matrixd calculateCorrMatrix(vecOfvec x);
+    double  getKernelPrior(void);
 
     /** Sets the kind of learning methodology for kernel hyperparameters */
     //void setLearnType(learning_type l_type);
@@ -121,7 +126,7 @@ namespace bayesopt
   inline void KernelRegressor::fitSurrogateModel()
   {
     computeCholeskyCorrelation();
-    precomputePrediction(); 
+    precomputePrediction();
   };
 
   inline size_t KernelRegressor::nHyperParameters()
@@ -187,18 +192,21 @@ namespace bayesopt
   // { mLearnType = l_type; };
 
   inline void KernelRegressor::computeCorrMatrix(matrixd& corrMatrix)
-  { mKernel.computeCorrMatrix(mData.mX,corrMatrix,mRegularizer); }
+  { 
+    vecOfvec xx = mData.getSamplesX(); 
+
+    mKernel.computeCorrMatrix(xx,corrMatrix,mRegularizer); }
 
   inline  matrixd KernelRegressor::computeCorrMatrix()
   {
     const size_t nSamples = mData.getNSamples();
     matrixd corrMatrix(nSamples,nSamples);
-    mKernel.computeCorrMatrix(mData.mX,corrMatrix,mRegularizer);
+    mKernel.computeCorrMatrix(mData.getSamplesX(),corrMatrix,mRegularizer);
     return corrMatrix;
   }
 
   inline vectord KernelRegressor::computeCrossCorrelation(const vectord &query)
-  { return mKernel.computeCrossCorrelation(mData.mX,query); }
+  { return mKernel.computeCrossCorrelation(mData.getSamplesX(),query); }
 
   inline double KernelRegressor::computeSelfCorrelation(const vectord& query)
   { return mKernel.computeSelfCorrelation(query); }
@@ -209,6 +217,11 @@ namespace bayesopt
     vectord newK(correlation);
     utils::append(newK, selfcorrelation);
     utils::cholesky_add_row(mL,newK);
+  }
+
+  inline double KernelRegressor::getSignalVariance(void)
+  {
+    return mSigma;
   }
 
   /**@}*/

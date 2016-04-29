@@ -44,21 +44,24 @@ namespace bayesopt
     Dataset(const matrixd& x, const vectord& y);
     virtual ~Dataset();
 
-    void setSamples(const matrixd &x, const vectord &y);
-    void setSamples(const matrixd &x);
-    void setSamples(const vectord &y);
-    void addSample(const vectord &x, double y);
-    double getSampleY(size_t index) const;
-    vectord getSampleX(size_t index) const;
-    double getLastSampleY() const;
-    vectord getLastSampleX() const;
+    virtual void setSamples(const matrixd &x, const vectord &y);
+    virtual void setSamples(const matrixd &x);
+    virtual void setSamples(const vectord &y);
+    virtual void addSample(const vectord &x, double y);
+    virtual double getSampleY(size_t index) const;
+    virtual vectord getSampleX(size_t index) const;
+    virtual double getLastSampleY() const;
+    virtual vectord getLastSampleX() const;
 
-    void plotData(TLogLevel level);
+    virtual void plotData(TLogLevel level);
 
-    vectord getPointAtMinimum() const;
-    double getValueAtMinimum() const;
-    size_t getNSamples() const;
-    void updateMinMax( size_t i );
+    virtual vectord getPointAtMinimum() const;
+    virtual double getValueAtMinimum() const;
+    virtual size_t getNSamples() const;
+    virtual void updateMinMax( size_t i );
+
+    virtual vectord getSamplesY() const;
+    virtual vecOfvec getSamplesX() const;
 
     vecOfvec mX;                                         ///< Data inputs
     vectord mY;                                          ///< Data values
@@ -97,6 +100,9 @@ namespace bayesopt
     if ( mY(mMinIndex) > mY(i) )       mMinIndex = i;
     else if ( mY(mMaxIndex) < mY(i) )  mMaxIndex = i;
   };
+
+  inline vectord Dataset::getSamplesY() const {return mY; };
+  inline vecOfvec Dataset::getSamplesX() const {return mX; };
 
   /**@}*/
   

@@ -26,6 +26,7 @@
 #include "criteria/criteria_a_opt.hpp"
 #include "criteria/criteria_distance.hpp"
 #include "criteria/criteria_ei.hpp"
+#include "criteria/criteria_uei.hpp"
 #include "criteria/criteria_mi.hpp"
 #include "criteria/criteria_expected.hpp"
 #include "criteria/criteria_lcb.hpp"
@@ -52,6 +53,7 @@ namespace bayesopt
     registry["cEI"] = & create_func<ExpectedImprovement>;
     registry["cBEI"] = & create_func<BiasedExpectedImprovement>;
     registry["cEIa"] = & create_func<AnnealedExpectedImprovement>;
+    registry["cUEI"] = & create_func<UnscentedExpectedImprovement>;
     registry["cLCB"] = & create_func<LowerConfidenceBound>;
     registry["cLCBa"] = & create_func<AnnealedLowerConfindenceBound>;
     registry["cPOI"] = & create_func<ProbabilityOfImprovement>;

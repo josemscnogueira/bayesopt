@@ -71,13 +71,13 @@ namespace bayesopt {
     virtual std::string getBestCriteria(vectord& best) = 0;
 
 
-    void setSamples(const matrixd &x, const vectord &y);
-    void setSamples(const matrixd &x);
-    void setSamples(const vectord &y);
-    void setSample(const vectord &x, double y);
-    void addSample(const vectord &x, double y);
-    double getValueAtMinimum();
-    vectord getPointAtMinimum();
+    virtual void setSamples(const matrixd &x, const vectord &y);
+    virtual void setSamples(const matrixd &x);
+    virtual void setSamples(const vectord &y);
+    virtual void setSample(const vectord &x, double y);
+    virtual void addSample(const vectord &x, double y);
+    virtual double getValueAtMinimum();
+    virtual vectord getPointAtMinimum();
 
     void plotDataset(TLogLevel level);
 
