@@ -1,15 +1,15 @@
 # -------------------------------------------------------------------------
-#    This file is part of BayesOpt, an efficient C++ library for 
+#    This file is part of BayesOpt, an efficient C++ library for
 #    Bayesian optimization.
 #
 #    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
-# 
-#    BayesOpt is free software: you can redistribute it and/or modify it 
+#
+#    BayesOpt is free software: you can redistribute it and/or modify it
 #    under the terms of the GNU Affero General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    BayesOpt is distributed in the hope that it will be useful, but 
+#    BayesOpt is distributed in the hope that it will be useful, but
 #    WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Affero General Public License for more details.
@@ -21,7 +21,7 @@
 PROJECT(BayesOpt CXX)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 		      ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 if(APPLE)
@@ -34,8 +34,8 @@ endif(APPLE)
 
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
-      "Choose the type of build, options are: Debug Release 
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+      "Choose the type of build, options are: Debug Release
       RelWithDebInfo MinSizeRel."
       FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
@@ -71,7 +71,7 @@ INCLUDE(UseDoxygen)
 # Sobol sequences are hardcoded tables, so it might take a lot of time
 # to compile.
 IF(BAYESOPT_BUILD_SOBOL)
-  ADD_DEFINITIONS(-DUSE_SOBOL)	
+  ADD_DEFINITIONS(-DUSE_SOBOL)
   SET(SOBOL_SRC
     ./sobol/sobol.cpp
     ./sobol/sobol_i4.cpp
@@ -116,6 +116,7 @@ SET( BAYESOPT_SRCS
   ./src/student_t_distribution.cpp
   ./src/tgpnode.cpp
   ./src/treedgaussianprocess.cpp
+  ./src/tgpoptimizable.cpp
   )
 
 SET(UTILS_SRC
@@ -126,12 +127,12 @@ SET(UTILS_SRC
   ${SOBOL_SRC}
   )
 
-SET(WRAPPPERS_SRC 
+SET(WRAPPPERS_SRC
   ./src/wrappers/bayesoptwpr.cpp
   )
 
 
-INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/include 
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/include
 		     ${PROJECT_SOURCE_DIR}/utils
 		     ${PROJECT_SOURCE_DIR}/sobol )
 
@@ -148,16 +149,16 @@ ENDIF(NLOPT_BUILD)
 
 
 IF(BAYESOPT_BUILD_SHARED)
-  ADD_LIBRARY(bayesopt SHARED ${BAYESOPT_SRCS}   
+  ADD_LIBRARY(bayesopt SHARED ${BAYESOPT_SRCS}
     ${WRAPPPERS_SRC} ${UTILS_SRC} )
   IF(WIN32)
-    ADD_DEFINITIONS(-DBAYESOPT_DLL)	
+    ADD_DEFINITIONS(-DBAYESOPT_DLL)
     # In new versions of CMAKE they use a different system and the
     # symbol is not defined
     ADD_DEFINITIONS(-Dbayesopt_EXPORT )
   ENDIF()
 ELSE()
-  ADD_LIBRARY(bayesopt STATIC ${BAYESOPT_SRCS}   
+  ADD_LIBRARY(bayesopt STATIC ${BAYESOPT_SRCS}
     ${WRAPPPERS_SRC} ${UTILS_SRC} )
 ENDIF()
 
@@ -170,7 +171,7 @@ ENDIF(NLOPT_BUILD)
 IF((BAYESOPT_BUILD_SHARED OR BAYESOPT_MATLAB_COMPATIBLE) AND NOT WIN32)
   SET_TARGET_PROPERTIES(bayesopt PROPERTIES COMPILE_FLAGS "-fPIC")
 ENDIF()
-  
+
 TARGET_LINK_LIBRARIES(bayesopt ${EXT_LIBS})
 
 IF(BAYESOPT_BUILD_TESTS)
@@ -182,12 +183,12 @@ IF(BAYESOPT_BUILD_EXAMPLES)
   ADD_SUBDIRECTORY(examples)
 endif(BAYESOPT_BUILD_EXAMPLES)
 
-# INSTALL(FILES 
+# INSTALL(FILES
 #   ./include/bayesopt.hpp
 #   ./include/bayesoptbase.hpp
 #   ./include/boparameters.hpp
 #   ./include/boparameters.h
-#   ./wrappers/bayesopt.h 
+#   ./wrappers/bayesopt.h
 #   DESTINATION include
 # )
 
@@ -207,11 +208,11 @@ IF(BAYESOPT_PYTHON_INTERFACE)
   INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 #  find_package(python)
 #  find_python_module(numpy REQUIRED)
-#  string(REGEX REPLACE "__init.py.*" "core/include/${module}" 
+#  string(REGEX REPLACE "__init.py.*" "core/include/${module}"
 #	    		PY_MOD_INCLUDE "PY_NUMPY")
 #  include_directories(${PYTHON_INCLUDE_DIRS} ${PY_NUMPY_INCLUDE_DIRS} )
 
-  ADD_LIBRARY(esopt MODULE ${BAYESOPT_SRCS}   
+  ADD_LIBRARY(esopt MODULE ${BAYESOPT_SRCS}
     ${WRAPPPERS_SRC} ${UTILS_SRC} ./python/bayesopt.cpp)
 
   IF(NLOPT_BUILD)
@@ -228,8 +229,8 @@ IF(BAYESOPT_PYTHON_INTERFACE)
   ENDIF()
 
   #Find where to install Python libs
-  execute_process ( COMMAND 
-         python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" 
+  execute_process ( COMMAND
+         python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
          OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   INSTALL(

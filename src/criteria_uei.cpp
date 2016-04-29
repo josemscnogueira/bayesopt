@@ -271,4 +271,18 @@ void UnscentedExpectedImprovement::convertMatrixToParams(bopt_params& params, ma
     }
 }
 
+
+/**************************************************************************************************
+ *  Procedure                                                                                     *
+ *                                                                                                *
+ *  Description: convertMatrixToParams                                                            *
+ *  Class      : UnscentedExpectedImprovement                                                     *
+ **************************************************************************************************/
+void UnscentedExpectedImprovement::convertMatrixToParams(Parameters& params, matrixd& px)
+{
+    if (px.size1() != px.size2()) return;
+
+    params.input.noise_matrix = px;
+}
+
 } //namespace bayesopt

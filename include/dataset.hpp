@@ -1,18 +1,18 @@
-/** \file dataset.hpp 
+/** \file dataset.hpp
     \brief Dataset model */
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -67,12 +67,12 @@ namespace bayesopt
     vectord mY;                                          ///< Data values
 
   private:
-    size_t mMinIndex, mMaxIndex;	
+    size_t mMinIndex, mMaxIndex;
   };
 
 
   //// Inline methods
-  
+
   inline void Dataset::addSample(const vectord &x, double y)
   {
     mX.push_back(x); utils::append(mY,y);
@@ -105,7 +105,7 @@ namespace bayesopt
   inline vecOfvec Dataset::getSamplesX() const {return mX; };
 
   /**@}*/
-  
+
 } //namespace bayesopt
 
 #endif

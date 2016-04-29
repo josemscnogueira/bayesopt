@@ -34,6 +34,7 @@ public:
 
     // Static mathods
     static void convertMatrixToParams(bopt_params& params, matrixd& px);
+    static void convertMatrixToParams(Parameters&  params, matrixd& px);
 
 private:
     // Attributes

@@ -267,7 +267,7 @@ namespace bayesopt {
      * Parameters Class
      */
     Parameters::Parameters():
-        kernel(), mean(), crit_params(){
+        kernel(), mean(), input(), crit_params(){
         // Set default values
         init_default();
     }
