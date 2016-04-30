@@ -33,8 +33,8 @@ public:
     void        getSamples          (const vectord& x, std::vector<vectord>& xx, std::vector<double>& w);
 
     // Static mathods
-    static void convertMatrixToParams(bopt_params& params, matrixd& px);
-    static void convertMatrixToParams(Parameters&  params, matrixd& px);
+    static void convertMatrixToParams(bopt_params& params, const matrixd px);
+    static void convertMatrixToParams(Parameters&  params, const matrixd px);
 
 private:
     // Attributes

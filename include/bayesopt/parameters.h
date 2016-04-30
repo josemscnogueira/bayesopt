@@ -132,7 +132,7 @@ extern "C" {
     input_parameters input;      /**< Input noise                parameters */
 
     char* crit_name;             /**< Name of the criterion */
-    double crit_params[128];     /**< Criterion hyperparameters (if needed) */
+    double crit_params[256];     /**< Criterion hyperparameters (if needed) */
     size_t n_crit_params;        /**< Number of criterion hyperparameters */
   } bopt_params;
 

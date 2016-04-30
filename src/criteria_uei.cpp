@@ -256,7 +256,7 @@ bool UnscentedExpectedImprovement::isDiag(matrixd matrix)
  *  Description: convertMatrixToParams                                                            *
  *  Class      : UnscentedExpectedImprovement                                                     *
  **************************************************************************************************/
-void UnscentedExpectedImprovement::convertMatrixToParams(bopt_params& params, matrixd& px)
+void UnscentedExpectedImprovement::convertMatrixToParams(bopt_params& params, const matrixd px)
 {
     if (px.size1() != px.size2()) return;
 
@@ -267,6 +267,7 @@ void UnscentedExpectedImprovement::convertMatrixToParams(bopt_params& params, ma
         for (uint col = 0; col < dim; col += 1)
         {
             params.crit_params[4 + col + (row * dim)] = px(row, col);
+            params.input.noise[0 + col + (row * dim)] = px(row, col);
         }
     }
 }
@@ -278,11 +279,21 @@ void UnscentedExpectedImprovement::convertMatrixToParams(bopt_params& params, ma
  *  Description: convertMatrixToParams                                                            *
  *  Class      : UnscentedExpectedImprovement                                                     *
  **************************************************************************************************/
-void UnscentedExpectedImprovement::convertMatrixToParams(Parameters& params, matrixd& px)
+void UnscentedExpectedImprovement::convertMatrixToParams(Parameters& params, const matrixd px)
 {
     if (px.size1() != px.size2()) return;
 
+    uint dim = px.size1();
+
     params.input.noise_matrix = px;
+
+    for     (uint row = 0; row < dim; row += 1)
+    {
+        for (uint col = 0; col < dim; col += 1)
+        {
+            params.crit_params[4 + col + (row * dim)] = px(row, col);
+        }
+    }
 }
 
 } //namespace bayesopt

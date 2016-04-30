@@ -261,6 +261,7 @@ namespace bayesopt {
         mcmc_particles     = 10;
         wheight_power      = 1;
         wheight_threshold  = 0.00;
+        samples_to_save    = 5;
     }
 
     /*
@@ -382,7 +383,7 @@ namespace bayesopt {
       {
          for (size_t col = 0; col < input.noise_matrix.size2(); ++col)
          {
-             c_params.input.noise[row + (col * input.noise_matrix.size1())] = input.noise_matrix(row,col);
+             c_params.input.noise[col + (row * input.noise_matrix.size1())] = input.noise_matrix(row,col);
          }
       }
       c_params.input.n_coef = input.noise_matrix.size1() * input.noise_matrix.size2();

@@ -25,6 +25,7 @@
 #ifndef __BOPT_PARAMETERS_HPP__
 #define __BOPT_PARAMETERS_HPP__
 
+#include <vector>
 #include <string>
 #include <boost/numeric/ublas/vector.hpp>
 
@@ -75,6 +76,8 @@ namespace bayesopt {
         size_t   mcmc_particles;
         double   wheight_power;
         double   wheight_threshold;
+        double   samples_to_save;
+        std::vector<std::string> others;
 
         /* Class member functions */
         TgpParameters(void);

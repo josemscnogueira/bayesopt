@@ -1,17 +1,17 @@
 /**  \file bayesopt.hpp \brief BayesOpt main C++ interface */
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -29,21 +29,21 @@
 namespace bayesopt  {
 
   // Forward declarations
-  namespace utils 
-  {  
-    template <class V> 
+  namespace utils
+  {
+    template <class V>
     class BoundingBox;
   }
   class NLOPT_Optimization;
   class CritCallback;
 
 
-  
+
   /** \addtogroup BayesOpt */
   /**@{*/
 
   /**
-   * \brief Bayesian optimization for functions in continuous input spaces. 
+   * \brief Bayesian optimization for functions in continuous input spaces.
    *
    * It requires box constrains for the input space. More exactly:
    * \f$ f(x):\mathcal{D} \subset \mathbb{R}^n \Rightarrow \mathbb{R} \f$.
@@ -54,12 +54,12 @@ namespace bayesopt  {
    *   vectord result(dim), lBound(dim), uBound(dim);
    *   \\.. Define bounds
    *   opt.setBoundingBox(lBound,uBound);
-   * \endcode  
+   * \endcode
    *
    * Optimization can be run in batch mode calling
    * \code{.cpp}
    *   opt.optimize(result);
-   * \endcode  
+   * \endcode
    * or step by step.
    * \code{.cpp}
    *   opt.initiliazeOptimization();
@@ -67,18 +67,18 @@ namespace bayesopt  {
    *   opt.stepOptimization();
    *   \\...
    *   result getFinalResult();
-   * \endcode  
+   * \endcode
    *
    * This model can also be used for discrete/integer data, provided
    * that the callback function provides the corresponding casting or
    * nearest neighbour.
-   * 
+   *
    * \see BayesOptBase about how to run the optimization
    */
   class BAYESOPT_API ContinuousModel: public BayesOptBase
   {
   public:
-    /** 
+    /**
      * Constructor
      * @param dim number of input dimensions
      * @param params set of parameters (see parameters.h)
@@ -88,8 +88,8 @@ namespace bayesopt  {
     /**  Default destructor  */
     virtual ~ContinuousModel();
 
-    /** 
-     * \brief Sets the bounding box. 
+    /**
+     * \brief Sets the bounding box.
      *
      * @param lowerBound vector with the lower bounds of the hypercube
      * @param upperBound vector with the upper bounds of the hypercube
@@ -103,9 +103,9 @@ namespace bayesopt  {
 	greedy exploration. */
     vectord samplePoint();
 
-    /** 
+    /**
      * \brief Call the inner optimization method to find the optimal
-     * point acording to the criteria.  
+     * point acording to the criteria.
      * @param xOpt optimal point
      */
     void findOptimal(vectord &xOpt);
@@ -117,7 +117,7 @@ namespace bayesopt  {
     /** Selects the initial set of points to build the surrogate model. */
     void generateInitialPoints(matrixd& xPoints);
 
-  private:
+  protected:
     boost::scoped_ptr<utils::BoundingBox<vectord> > mBB;      ///< Bounding Box (input space limits)
     boost::scoped_ptr<NLOPT_Optimization> cOptimizer;
     boost::scoped_ptr<CritCallback> mCallback;
@@ -125,13 +125,13 @@ namespace bayesopt  {
   private:
     ContinuousModel();                       ///< Default constructor forbidden.
   };
-  
+
 
   /**
-   * \brief Bayesian optimization for functions in discrete spaces. 
+   * \brief Bayesian optimization for functions in discrete spaces.
    *
    * The discrete space can be created in two ways depending on the constructor used:
-   *  -# A set of discrete points (real vectors) in a real space. 
+   *  -# A set of discrete points (real vectors) in a real space.
    *  -# A set of categories with different values for each category.
    *
    * The kind of models used in this library are more suitable for
@@ -145,12 +145,12 @@ namespace bayesopt  {
    *   DiscreteModel opt(validSetOfPoints,params);
    *   \\ or
    *   DiscreteModel opt(categories,params);
-   * \endcode  
+   * \endcode
    *
    * Optimization can be run in batch mode calling
    * \code{.cpp}
    *   opt.optimize(result);
-   * \endcode  
+   * \endcode
    * or step by step.
    * \code{.cpp}
    *   opt.initiliazeOptimization();
@@ -158,7 +158,7 @@ namespace bayesopt  {
    *   opt.stepOptimization();
    *   \\...
    *   result getFinalResult();
-   * \endcode  
+   * \endcode
    *
    * \see BayesOptBase about how to run the optimization
    * \see HammingKernel for categorical data.
@@ -166,31 +166,31 @@ namespace bayesopt  {
   class BAYESOPT_API DiscreteModel : public BayesOptBase
   {
   public:
-    /** 
+    /**
      * Constructor for real-valued discrete data
      * @param validSet  Set of potential inputs
      * @param params set of parameters (see parameters.h)
      */
     DiscreteModel(const vecOfvec &validSet, Parameters params);
 
-    /** 
+    /**
      * Constructor for categorical data
      * @param number of categories per dimension
      * @param params set of parameters (see parameters.h)
      */
     DiscreteModel(const vectori &categories, Parameters params);
-    
+
     /** Default destructor  */
     virtual ~DiscreteModel();
-    
+
   protected:
     /** Sample a single point in the input space. Used for epsilon
 	greedy exploration. */
     vectord samplePoint();
 
-    /** 
+    /**
      * \brief Call the inner optimization method to find the optimal
-     * point acording to the criteria.  
+     * point acording to the criteria.
      * @param xOpt optimal point
      */
     void findOptimal(vectord &xOpt);

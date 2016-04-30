@@ -2,17 +2,17 @@
 /**  \file bayesoptbase.hpp \brief BayesOpt common module for interfaces */
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -72,29 +72,29 @@ namespace bayesopt {
   class BAYESOPT_API BayesOptBase
   {
   public:
-    /** 
+    /**
      * Constructor
      * @param params set of parameters (see parameters.hpp)
      */
     BayesOptBase(size_t dim, Parameters params);
 
-    /** 
+    /**
      * Default destructor
      */
     virtual ~BayesOptBase();
 
-    /** 
+    /**
      * \brief Function that defines the actual function to be optimized.
      * This function must be modified (overriden) according to the
      * specific problem.
      *
-     * @param query point to be evaluated. 
+     * @param query point to be evaluated.
      * @return value of the function at the point evaluated.
      */
     virtual double evaluateSample( const vectord &query ) = 0;
-    
 
-    /** 
+
+    /**
      * \brief This function checks if the query is valid or not. It can
      * be used to introduce arbitrary constrains. Since the Gaussian
      * process assumes smoothness, constrains are managed by the inner
@@ -104,20 +104,20 @@ namespace bayesopt {
      *
      * Note: This function is experimental. Thus it is not made pure virtual.
      * Using it is completely optional.
-     * 
+     *
      * @param query point to be evaluated.
-     * 
+     *
      * @return boolean value showing if the the function is valid at
      *         the query point or not.
-     */ 
+     */
     virtual bool checkReachability( const vectord &query )
     { return true; };
 
 
-    /** 
+    /**
      * \brief Execute the optimization process of the function defined
      * in evaluateSample.
-     * 
+     *
      * @see evaluateSample
      * @see checkReachability
      *
@@ -125,21 +125,21 @@ namespace bayesopt {
      */
     void optimize(vectord &bestPoint);
 
-    /** 
+    /**
      * \brief Execute ONE step the optimization process of the
-     * function defined in evaluateSample.  
-     */  
+     * function defined in evaluateSample.
+     */
     virtual void stepOptimization();
 
     /** Initialize the optimization process.  */
     virtual void initializeOptimization();
-    
+
     /** Once the optimization has been perfomed, return the optimal point. */
     virtual vectord getFinalResult();
 
     /** Saves the current state of the optimization process into a state class. */
     void saveOptimization(BOptState &state);
-    
+
     /** Restores the optimization process of a previous execution */
     void restoreOptimization(BOptState state);
 
@@ -164,13 +164,13 @@ namespace bayesopt {
 	greedy exploration. */
     virtual vectord samplePoint() = 0;
 
-    /** 
+    /**
      * \brief Call the inner optimization method to find the optimal
-     * point acording to the criteria.  
+     * point acording to the criteria.
      * @param xOpt optimal point
      */
     virtual void findOptimal(vectord &xOpt) = 0;
-  
+
     /** Remap the point x to the original space (e.g.:
 	unnormalization) */
     virtual vectord remapPoint(const vectord& x) = 0;
@@ -178,16 +178,16 @@ namespace bayesopt {
     /** Selects the initial set of points to build the surrogate model. */
     virtual void generateInitialPoints(matrixd& xPoints) = 0;
 
-    /** 
+    /**
      * \brief Print data for every step according to the verbose level
-     * 
-     * @param iteration iteration number 
+     *
+     * @param iteration iteration number
      * @param xNext next point
      * @param yNext function value at next point
      */
     void plotStepData(size_t iteration, const vectord& xNext,
 			      double yNext);
-        
+
     /** Eases the process of saving a state during initial samples */
     void saveInitialSamples(matrixd xPoints);
     void saveResponse(double yPoint, bool clear);
@@ -198,7 +198,7 @@ namespace bayesopt {
     size_t mCurrentIter;                        ///< Current iteration number
     boost::mt19937 mEngine;                      ///< Random number generator
 
-  private:
+  protected:
     boost::scoped_ptr<PosteriorModel> mModel;
     double mYPrev;
     size_t mCounterStuck;
@@ -206,13 +206,13 @@ namespace bayesopt {
 
     BayesOptBase();
 
-    /** 
+    /**
      * \brief Selects the next point to evaluate according to a certain
      * criteria or metacriteria
-     * 
+     *
      * @return next point to evaluate
      */
-    vectord nextPoint();  
+    vectord nextPoint();
 
   };
 
