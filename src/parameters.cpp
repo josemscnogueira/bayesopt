@@ -212,6 +212,7 @@ bopt_params initialize_parameters_to_default(void)
 
   params.kernel = kernel;
   params.mean = mean;
+  params.input = input;
 
   return params;
 }

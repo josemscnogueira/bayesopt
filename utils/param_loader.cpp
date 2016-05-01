@@ -1,16 +1,16 @@
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -23,28 +23,28 @@
 #include "param_loader.hpp"
 
 namespace bayesopt
-{       
-  namespace utils{      
+{
+  namespace utils{
     bool ParamLoader::load(std::string filename, Parameters &par){
         utils::FileParser fp(filename);
         if(!fp.fileExists()){
             return false;
         }
-        
+
         par = initialize_parameters_to_default();
         fp.openInput();
-        
+
         loadOrSave(fp, par);
         return true;
     }
-    
+
     void ParamLoader::save(std::string filename, Parameters &par){
         utils::FileParser fp(filename);
         fp.openOutput();
-        
+
         loadOrSave(fp, par);
     }
-    
+
     void ParamLoader::loadOrSave(utils::FileParser &fp, Parameters &par){
         fp.readOrWrite("n_iterations", par.n_iterations);
         fp.readOrWrite("n_inner_iterations", par.n_inner_iterations);
@@ -62,7 +62,7 @@ namespace bayesopt
         fp.readOrWrite("noise", par.noise);
         fp.readOrWrite("alpha", par.alpha);
         fp.readOrWrite("beta", par.beta);
-        
+
         // Enums
         if(fp.isReading()){
             par.sc_type = str2score(fp.read("sc_type").c_str());
@@ -72,23 +72,22 @@ namespace bayesopt
             fp.write("sc_type",score2str(par.sc_type));
             fp.write("l_type", learn2str(par.l_type));
         }
-        
+
         fp.readOrWrite("l_all", par.l_all);
         fp.readOrWrite("epsilon", par.epsilon);
         fp.readOrWrite("force_jump", par.force_jump);
-        
+
         fp.readOrWrite("kernel.name", par.kernel.name);
         fp.readOrWrite("kernel.hp_mean", par.kernel.hp_mean);
         fp.readOrWrite("kernel.hp_std", par.kernel.hp_std);
-        
+
         fp.readOrWrite("mean.name", par.mean.name);
         fp.readOrWrite("mean.coef_mean", par.mean.coef_mean);
         fp.readOrWrite("mean.coef_std", par.mean.coef_std);
-        
+
         fp.readOrWrite("crit_name", par.crit_name);
         fp.readOrWrite("crit_params", par.crit_params);
-        
+
     }
   } //namespace utils
 } //namespace bayesopt
-
