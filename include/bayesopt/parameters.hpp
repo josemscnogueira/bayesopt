@@ -28,6 +28,7 @@
 #include <vector>
 #include <string>
 #include <boost/numeric/ublas/vector.hpp>
+#include <json/json.h>
 
 #include "bayesopt/parameters.h"     // learning_type, score_type
 #include "specialtypes.hpp"
@@ -46,6 +47,8 @@ namespace bayesopt {
 
         /* Class member functions */
         KernelParameters();
+
+        Json::Value getJson(void);
     };
 
     class MeanParameters{
@@ -57,6 +60,8 @@ namespace bayesopt {
 
         /* Class member functions */
         MeanParameters();
+
+        Json::Value getJson(void);
     };
 
     class InputParameters
@@ -71,9 +76,9 @@ namespace bayesopt {
     class TgpParameters
     {
     public:
-        size_t   dimensions;
-        size_t   min_data_per_leaf;
-        size_t   mcmc_particles;
+        uint     dimensions;
+        uint     min_data_per_leaf;
+        uint     mcmc_particles;
         double   wheight_power;
         double   wheight_threshold;
         double   samples_to_save;
@@ -81,6 +86,8 @@ namespace bayesopt {
 
         /* Class member functions */
         TgpParameters(void);
+
+        Json::Value getJson(void);
     };
 
     class Parameters{
@@ -157,6 +164,8 @@ namespace bayesopt {
         void set_score(std::string name);
         /* Returns the string that corresponds to the sc_type value */
         std::string get_score();
+
+        Json::Value getJson(void);
 
     private:
         /* Encapsulated default values assigment operations */

@@ -124,6 +124,7 @@ SET(UTILS_SRC
   ./utils/param_loader.cpp
   ./utils/parser.cpp
   ./utils/ublas_extra.cpp
+  ./utils/ublas_string.cpp
   ${SOBOL_SRC}
   )
 
@@ -147,6 +148,8 @@ ELSE(NLOPT_BUILD)
   SET(EXT_LIBS ${NLOPT})
 ENDIF(NLOPT_BUILD)
 
+# Add JsonCpp lib
+SET(EXT_LIBS libjsoncpp.a)
 
 IF(BAYESOPT_BUILD_SHARED)
   ADD_LIBRARY(bayesopt SHARED ${BAYESOPT_SRCS}
