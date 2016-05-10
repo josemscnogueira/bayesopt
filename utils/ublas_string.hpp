@@ -9,8 +9,10 @@ namespace bayesopt
 {
     namespace utils
     {
-        std::string ublas_toString(const vectord& vec);
-        std::string ublas_toString(const matrixd& mat);
+        std::string ublas_toString       (const vectord&     vec);
+        std::string ublas_toString       (const matrixd&     mat);
+        vectord     string_toUblasVectord(const std::string& s);
+        matrixd     string_toUblasMatrixd(const std::string& s);
     } // End of namespace utils
 } // End of namespace bayesopt
 
