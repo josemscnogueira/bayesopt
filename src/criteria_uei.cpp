@@ -286,6 +286,7 @@ void UnscentedExpectedImprovement::convertMatrixToParams(Parameters& params, con
     uint dim = px.size1();
 
     params.input.noise_matrix = px;
+    params.crit_params.resize(4+dim*dim, true);
 
     for     (uint row = 0; row < dim; row += 1)
     {

@@ -11,5 +11,13 @@ namespace bayesopt
 
             return output.str();
         }
+
+        std::string ublas_toString(const matrixd& mat)
+        {
+            std::stringstream output;
+                              output << mat;
+
+            return output.str();
+        }
     } // End of namespace utils
 } // End of namespace bayesopt

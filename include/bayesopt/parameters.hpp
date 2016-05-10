@@ -71,14 +71,16 @@ namespace bayesopt {
 
         /* Class member functions */
         InputParameters(void);
+
+        Json::Value getJson(void);
     };
 
     class TgpParameters
     {
     public:
-        uint     dimensions;
-        uint     min_data_per_leaf;
-        uint     mcmc_particles;
+        size_t     dimensions;
+        size_t     min_data_per_leaf;
+        size_t     mcmc_particles;
         double   wheight_power;
         double   wheight_threshold;
         double   samples_to_save;

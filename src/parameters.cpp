@@ -273,6 +273,14 @@ namespace bayesopt {
         noise_matrix(0,0) = DEFAULT_INPUT_NOISE;
     }
 
+    Json::Value InputParameters::getJson(void)
+    {
+        Json::Value output;
+                    output["noise_matrix" ] = Json::Value(bayesopt::utils::ublas_toString(noise_matrix));
+
+        return output;
+    }
+
     /*
      * TgpParameters Class
      */
@@ -289,12 +297,12 @@ namespace bayesopt {
     Json::Value TgpParameters::getJson(void)
     {
         Json::Value output;
-                    output["dimensions"       ] = Json::Value(dimensions);
-                    output["min_data_per_leaf"] = Json::Value(min_data_per_leaf);
-                    output["mcmc_particles"   ] = Json::Value(mcmc_particles);
-                    output["wheight_power"    ] = Json::Value(wheight_power);
-                    output["wheight_threshold"] = Json::Value(wheight_threshold);
-                    output["samples_to_save"  ] = Json::Value(samples_to_save);
+                    output["dimensions"       ] = Json::Value((Json::UInt64)dimensions);
+                    output["min_data_per_leaf"] = Json::Value((Json::UInt64)min_data_per_leaf);
+                    output["mcmc_particles"   ] = Json::Value((Json::UInt64)mcmc_particles);
+                    output["wheight_power"    ] = Json::Value(              wheight_power);
+                    output["wheight_threshold"] = Json::Value(              wheight_threshold);
+                    output["samples_to_save"  ] = Json::Value(              samples_to_save);
 
         return output;
     }
@@ -456,58 +464,40 @@ namespace bayesopt {
     Json::Value Parameters::getJson(void)
     {
         Json::Value output;
-                    output["kernel"] = kernel.getJson();
-                    output["mean"  ] = mean.  getJson();
+                    output["crit_name"  ] = Json::Value(crit_name);
+                    output["crit_params"] = Json::Value(bayesopt::utils::ublas_toString(crit_params));
 
+                    output["kernel"     ] = kernel.getJson();
+                    output["mean"       ] = mean.  getJson();
+                    output["input"      ] = input. getJson();
 
                     output["n_iterations"      ] = Json::Value((Json::UInt64) n_iterations);
                     output["n_inner_iterations"] = Json::Value((Json::UInt64) n_inner_iterations);
                     output["n_init_samples"    ] = Json::Value((Json::UInt64) n_init_samples);
                     output["n_iter_relearn"    ] = Json::Value((Json::UInt64) n_iter_relearn);
 
-                    // /** Sampling method for initial set 1-LHS, 2-Sobol (if available),
-                    //  *  other value-uniformly distributed */
-                    // size_t      init_method;
-                    // int         random_seed;         /**< >=0 -> Fixed seed, <0 -> Time based (variable). */
-                    //
-                    // int         verbose_level;       /**< Neg-Error,0-Warning,1-Info, 2-Debug -> stdout
-                    //                                         3-Error,4-Warning,5-Info,>5-Debug -> logfile */
-                    // std::string log_filename;        /**< Log file path (if applicable) */
-                    //
-                    // size_t      load_save_flag;      /**< 1-Load data,2-Save data,
-                    //                                       3-Load and save data. */
-                    // std::string load_filename;       /**< Init data file path (if applicable) */
-                    // std::string save_filename;       /**< Sava data file path (if applicable) */
-                    //
-                    // std::string surr_name;           /**< Name of the surrogate function */
-                    // double      sigma_s;             /**< Signal variance (if known).
-                    //                                       Used in GaussianProcess and GaussianProcessNormal */
-                    // double      noise;               /**< Variance of observation noise (and nugget) */
-                    //
-                    //
-                    // double      alpha;               /**< Inverse Gamma prior for signal var.
-                    //                                       Used in StudentTProcessNIG */
-                    // double      beta;                /**< Inverse Gamma prior for signal var.
-                    //                                       Used in StudentTProcessNIG */
-                    //
-                    // score_type    sc_type;           /**< Score type for kernel hyperparameters (ML,MAP,etc) */
-                    // learning_type l_type;            /**< Type of learning for the kernel params */
-                    // bool          l_all;             /**< Learn all hyperparameters or only kernel */
-                    //
-                    // double        epsilon;           /**< For epsilon-greedy exploration */
-                    // size_t        force_jump;        /**< If >0, and the difference between two
-                    //                                       consecutive observations is pure noise,
-                    //                                       for n consecutive steps, force a random
-                    //                                       jump. Avoid getting stuck if model is bad
-                    //                                       and there is few data, however, it might
-                    //                                       reduce the accuracy. */
-                    //
-                    // KernelParameters     kernel;         /**< Kernel parameters */
-                    // MeanParameters       mean;           /**< Mean (parametric function) parameters */
-                    // InputParameters      input;          /**< Input noise                parameters */
-                    //
-                    // std::string      crit_name;      /**< Name of the criterion */
-                    // vectord          crit_params;    /**< Criterion hyperparameters (if needed) */
+                    output["init_method"       ] = Json::Value((Json::UInt64) init_method);
+                    output["random_seed"       ] = Json::Value(               random_seed);
+
+                    output["verbose_level"     ] = Json::Value(               verbose_level);
+                    output["log_filename"      ] = Json::Value(               log_filename);
+
+                    output["load_save_flag"    ] = Json::Value((Json::UInt64) load_save_flag);
+                    output["load_filename"     ] = Json::Value(               load_filename);
+                    output["save_filename"     ] = Json::Value(               save_filename);
+
+                    output["surr_name"         ] = Json::Value(               surr_name);
+
+                    output["sigma_s"           ] = Json::Value(               sigma_s);
+                    output["noise"             ] = Json::Value(               noise);
+                    output["alpha"             ] = Json::Value(               alpha);
+                    output["beta"              ] = Json::Value(               beta);
+
+                    output["sc_type"           ] = Json::Value((Json::UInt64) sc_type);
+                    output["l_type"            ] = Json::Value((Json::UInt64) l_type);
+                    output["l_all"             ] = Json::Value(               l_all);
+                    output["epsilon"           ] = Json::Value(               epsilon);
+                    output["force_jump"        ] = Json::Value((Json::UInt64) force_jump);
 
         return output;
     }
