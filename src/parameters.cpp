@@ -243,6 +243,18 @@ namespace bayesopt {
         return output;
     }
 
+    void KernelParameters::loadJson(Json::Value config)
+    {
+        if (config["name"   ].isNull() != true)
+            name = config["name"].asString();
+
+        if (config["hp_mean"].isNull() != true)
+            hp_mean = bayesopt::utils::string_toUblasVectord(config["hp_mean"].asString());
+
+        if (config["hp_std "].isNull() != true)
+            hp_std  = bayesopt::utils::string_toUblasVectord(config["hp_std" ].asString());
+    }
+
     /*
      * MeanParameters Class
      */
@@ -264,6 +276,18 @@ namespace bayesopt {
         return output;
     }
 
+    void MeanParameters::loadJson(Json::Value config)
+    {
+        if (config["name"   ].isNull() != true)
+            name = config["name"].asString();
+
+        if (config["coef_mean"].isNull() != true)
+            coef_mean = bayesopt::utils::string_toUblasVectord(config["coef_mean"].asString());
+
+        if (config["coef_std "].isNull() != true)
+            coef_std  = bayesopt::utils::string_toUblasVectord(config["coef_std" ].asString());
+    }
+
     /*
      * InputParameters Class
      */
@@ -279,6 +303,12 @@ namespace bayesopt {
                     output["noise_matrix" ] = Json::Value(bayesopt::utils::ublas_toString(noise_matrix));
 
         return output;
+    }
+
+    void InputParameters::loadJson(Json::Value config)
+    {
+        if (config["noise_matrix"].isNull() != true)
+            noise_matrix = bayesopt::utils::string_toUblasMatrixd(config["noise_matrix" ].asString());
     }
 
     /*
@@ -305,6 +335,27 @@ namespace bayesopt {
                     output["samples_to_save"  ] = Json::Value(              samples_to_save);
 
         return output;
+    }
+
+    void TgpParameters::loadJson(Json::Value config)
+    {
+        if (config["dimensions"       ].isNull() != true)
+            dimensions        = (size_t) config["dimensions"       ].asUInt64();
+
+        if (config["min_data_per_leaf"].isNull() != true)
+            min_data_per_leaf = (size_t) config["min_data_per_leaf"].asUInt64();
+
+        if (config["mcmc_particles"   ].isNull() != true)
+            mcmc_particles    = (size_t) config["mcmc_particles"   ].asUInt64();
+
+        if (config["wheight_power"    ].isNull() != true)
+            wheight_power     =          config["wheight_power"    ].asUInt64();
+
+        if (config["wheight_threshold"].isNull() != true)
+            wheight_threshold =          config["wheight_threshold"].asUInt64();
+
+        if (config["samples_to_save"  ].isNull() != true)
+            samples_to_save   =          config["samples_to_save"  ].asUInt64();
     }
 
     /*
@@ -480,8 +531,8 @@ namespace bayesopt {
                     output["random_seed"       ] = Json::Value(               random_seed);
 
                     output["verbose_level"     ] = Json::Value(               verbose_level);
-                    output["log_filename"      ] = Json::Value(               log_filename);
 
+                    output["log_filename"      ] = Json::Value(               log_filename);
                     output["load_save_flag"    ] = Json::Value((Json::UInt64) load_save_flag);
                     output["load_filename"     ] = Json::Value(               load_filename);
                     output["save_filename"     ] = Json::Value(               save_filename);
@@ -500,6 +551,73 @@ namespace bayesopt {
                     output["force_jump"        ] = Json::Value((Json::UInt64) force_jump);
 
         return output;
+    }
+
+    void Parameters::loadJson(Json::Value config)
+    {
+        if (config["crit_name"].isNull() != true)
+        {
+            crit_name = config["crit_name"].asString();
+
+            if (config["crit_params"].isNull() != true)
+                crit_params = bayesopt::utils::string_toUblasVectord(config["crit_params"].asString());
+        }
+
+        if (config["kernel"].isNull() != true)
+            kernel.loadJson(config["kernel"]);
+        if (config["mean"  ].isNull() != true)
+            kernel.loadJson(config["mean"  ]);
+        if (config["input" ].isNull() != true)
+            kernel.loadJson(config["input" ]);
+
+        if (config["n_iterations"      ].isNull() != true)
+            n_iterations       = config["n_iterations"      ].asUInt64();
+        if (config["n_inner_iterations"].isNull() != true)
+            n_inner_iterations = config["n_inner_iterations"].asUInt64();
+        if (config["n_init_samples"    ].isNull() != true)
+            n_init_samples     = config["n_init_samples"    ].asUInt64();
+        if (config["n_iter_relearn"    ].isNull() != true)
+            n_iter_relearn     = config["n_iter_relearn"    ].asUInt64();
+
+        if (config["init_method"].isNull() != true)
+            init_method = config["init_method"].asUInt64();
+        if (config["random_seed"].isNull() != true)
+            random_seed = config["random_seed"].asInt64();
+
+        if (config["verbose_level"].isNull() != true)
+            verbose_level = config["verbose_level"].asInt64();
+
+        if (config["log_filename"  ].isNull() != true)
+            log_filename   = config["log_filename"  ].asString();
+        if (config["load_save_flag"].isNull() != true)
+            load_save_flag = config["load_save_flag"].asUInt64();
+        if (config["load_filename" ].isNull() != true)
+            load_filename  = config["load_filename" ].asString();
+        if (config["save_filename" ].isNull() != true)
+            save_filename  = config["save_filename" ].asString();
+
+        if (config["surr_name"].isNull() != true)
+            surr_name = config["surr_name"].asString();
+
+        if (config["sigma_s"].isNull() != true)
+            sigma_s = config["sigma_s"].asDouble();
+        if (config["noise"].isNull() != true)
+            noise   = config["noise"  ].asDouble();
+        if (config["alpha"].isNull() != true)
+            alpha   = config["alpha"  ].asDouble();
+        if (config["beta"].isNull() != true)
+            beta    = config["beta"   ].asDouble();
+
+        if (config["sc_type"].isNull() != true)
+            sc_type    = (score_type)    config["sc_type"   ].asUInt64();
+        if (config["l_type"].isNull() != true)
+            l_type     = (learning_type) config["l_type"    ].asUInt64();
+        if (config["l_all"].isNull() != true)
+            l_all      =                 config["l_all"     ].asBool();
+        if (config["epsilon"].isNull() != true)
+            epsilon    =                 config["epsilon"   ].asDouble();
+        if (config["force_jump"].isNull() != true)
+            force_jump =                 config["force_jump"].asDouble();
     }
 
 

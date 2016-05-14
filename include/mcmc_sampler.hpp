@@ -1,17 +1,17 @@
 /**  \file mcmc_sampler.hpp \brief Markov Chain Monte Carlo algorithms */
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -31,7 +31,7 @@
 
 namespace bayesopt {
 
-  // We plan to add more in the future 
+  // We plan to add more in the future
   typedef enum {
     SLICE_MCMC           ///< Slice sampling
   } McmcAlgorithms;
@@ -50,12 +50,12 @@ namespace bayesopt {
   class MCMCSampler
   {
   public:
-    /** 
+    /**
      * \brief Constructor (Note: default constructor is private)
-     * 
+     *
      * @param rbo point to RBOptimizable type of object with the PDF
-     *            to sample from. IMPORTANT: We assume that the 
-     *            evaluation of rbo is the NEGATIVE LOG PDF.  
+     *            to sample from. IMPORTANT: We assume that the
+     *            evaluation of rbo is the NEGATIVE LOG PDF.
      * @param dim number of input dimensions
      * @param eng random number generation engine (boost)
      */
@@ -70,12 +70,12 @@ namespace bayesopt {
 
     /**Usually, the initial samples of any MCMC method are biased and
      *	they are discarded. This phase is called the burnout. This
-     *	method sets the number of particles to be discarded 
+     *	method sets the number of particles to be discarded
      */
     void setNBurnOut(size_t nParticles);
 
     /** Compute the set of particles according to the target PDF.
-     * @param Xnext input: initial point of the Markov Chain, 
+     * @param Xnext input: initial point of the Markov Chain,
      *              output: last point of the Markov Chain
      */
     void run(vectord &Xnext);
@@ -121,8 +121,8 @@ namespace bayesopt {
   inline void MCMCSampler::printParticles()
   {
     for(size_t i=0; i<mParticles.size(); ++i)
-      { 
-	FILE_LOG(logDEBUG) << i << "->" << mParticles[i] 
+      {
+	FILE_LOG(logDEBUG) << i << "->" << mParticles[i]
 			   << " | Log-lik " << -obj->evaluate(mParticles[i]);
       }
   }

@@ -48,7 +48,8 @@ namespace bayesopt {
         /* Class member functions */
         KernelParameters();
 
-        Json::Value getJson(void);
+        Json::Value getJson (void);
+        void        loadJson(Json::Value config);
     };
 
     class MeanParameters{
@@ -61,7 +62,8 @@ namespace bayesopt {
         /* Class member functions */
         MeanParameters();
 
-        Json::Value getJson(void);
+        Json::Value getJson (void);
+        void        loadJson(Json::Value config);
     };
 
     class InputParameters
@@ -72,7 +74,8 @@ namespace bayesopt {
         /* Class member functions */
         InputParameters(void);
 
-        Json::Value getJson(void);
+        Json::Value getJson (void);
+        void        loadJson(Json::Value config);
     };
 
     class TgpParameters
@@ -90,6 +93,7 @@ namespace bayesopt {
         TgpParameters(void);
 
         Json::Value getJson(void);
+        void        loadJson(Json::Value config);
     };
 
     class Parameters{
@@ -167,7 +171,8 @@ namespace bayesopt {
         /* Returns the string that corresponds to the sc_type value */
         std::string get_score();
 
-        Json::Value getJson(void);
+        Json::Value getJson (void);
+        void        loadJson(Json::Value config);
 
     private:
         /* Encapsulated default values assigment operations */
