@@ -84,9 +84,9 @@ namespace bayesopt {
         size_t     dimensions;
         size_t     min_data_per_leaf;
         size_t     mcmc_particles;
-        double   wheight_power;
-        double   wheight_threshold;
-        double   samples_to_save;
+        size_t     samples_to_save;
+        double     wheight_power;
+        double     wheight_threshold;
         std::vector<std::string> others;
 
         /* Class member functions */

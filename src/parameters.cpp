@@ -332,7 +332,7 @@ namespace bayesopt {
                     output["mcmc_particles"   ] = Json::Value((Json::UInt64)mcmc_particles);
                     output["wheight_power"    ] = Json::Value(              wheight_power);
                     output["wheight_threshold"] = Json::Value(              wheight_threshold);
-                    output["samples_to_save"  ] = Json::Value(              samples_to_save);
+                    output["samples_to_save"  ] = Json::Value((Json::UInt64)samples_to_save);
 
         return output;
     }
@@ -349,10 +349,10 @@ namespace bayesopt {
             mcmc_particles    = (size_t) config["mcmc_particles"   ].asUInt64();
 
         if (config["wheight_power"    ].isNull() != true)
-            wheight_power     =          config["wheight_power"    ].asUInt64();
+            wheight_power     =          config["wheight_power"    ].asDouble();
 
         if (config["wheight_threshold"].isNull() != true)
-            wheight_threshold =          config["wheight_threshold"].asUInt64();
+            wheight_threshold =          config["wheight_threshold"].asDouble();
 
         if (config["samples_to_save"  ].isNull() != true)
             samples_to_save   =          config["samples_to_save"  ].asUInt64();
