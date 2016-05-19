@@ -8,6 +8,8 @@
 /**************************************************************************************************
  *  Include Files                                                                                 *
  **************************************************************************************************/
+#include "ublas_string.hpp"
+
 #include "tgpoptimizable.hpp"
 
 
@@ -173,6 +175,52 @@ void TGPOptimizable::unnormalizeVector(vectord& x)
 void TGPOptimizable::normalizeVector(vectord& x)
 {
     x = boost::numeric::ublas::element_div(x - lower_bound, upper_bound - lower_bound);
+}
+
+
+/**
+ * Converts object of TGPOptimizable to Json::Value
+ *
+ * @return  Json value that describes the object metadata
+ */
+Json::Value TGPOptimizable::getJson(void)
+{
+    Json::Value output;
+                output["name"       ] = Json::Value(name);
+                output["ymin"       ] = Json::Value(ymin);
+                output["ymax"       ] = Json::Value(ymax);
+                output["dim"        ] = Json::Value(dim );
+                output["lower_bound"] = Json::Value(bayesopt::utils::ublas_toString(lower_bound));
+                output["upper_bound"] = Json::Value(bayesopt::utils::ublas_toString(upper_bound));
+
+    return output;
+}
+
+
+/**
+ * Loads Json metadata into TGPOptimizable object
+ *
+ * @param config Metadata in form of Json::Value
+ */
+void TGPOptimizable::loadJson(Json::Value config)
+{
+    if (config["name"].isNull() != true)
+        name = config["name"].asString();
+
+    if (config["ymin"].isNull() != true)
+        ymin = config["ymin"].asDouble();
+
+    if (config["ymax"].isNull() != true)
+        ymax = config["ymax"].asDouble();
+
+    if (config["dim"].isNull() != true)
+        dim = config["dim"].asUInt64();
+
+    if (config["lower_bound"].isNull() != true)
+        lower_bound = bayesopt::utils::string_toUblasVectord(config["lower_bound"].asString());
+
+    if (config["upper_bound"].isNull() != true)
+        upper_bound = bayesopt::utils::string_toUblasVectord(config["upper_bound"].asString());
 }
 
 } // End of namespace bayesopt

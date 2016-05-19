@@ -16,6 +16,7 @@
 #include "specialtypes.hpp"
 #include "bayesopt/parameters.hpp"
 #include "criteria/criteria_uei.hpp"
+#include <json/json.h>
 
 
 namespace bayesopt {
@@ -55,6 +56,10 @@ public:
 
     virtual void    unnormalizeVector             (vectord& x);
     virtual void    normalizeVector               (vectord& x);
+
+    virtual Json::Value getJson (void);
+    void                loadJson(Json::Value config);
+
 };
 
 } // End of namespace bayesopt
