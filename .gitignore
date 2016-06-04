@@ -1,7 +1,8 @@
+cmake-build
+build
 doc
 bin
 direct
-cmake-build
 CMakeFiles
 CMakeCache
 Makefile
