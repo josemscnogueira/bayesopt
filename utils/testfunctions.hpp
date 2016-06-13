@@ -30,6 +30,8 @@
 #include <boost/numeric/ublas/assignment.hpp>
 #include "bayesopt/bayesopt.hpp"
 #include "specialtypes.hpp"
+#include "ublas_trace.hpp"
+#include "ublas_cholesky.hpp"
 
 
 
@@ -207,6 +209,99 @@ private:
   matrixd mA;
   vectord mC;
   matrixd mP;
+};
+
+
+/**
+ * GaussianMixture2D - Martinez-Cantin Function
+ */
+class GaussianMixture2DNormalized: public bayesopt::ContinuousModel
+{
+public:
+    GaussianMixture2DNormalized(bayesopt::Parameters par):
+        ContinuousModel(2,par) {}
+
+    double evaluateSample(const vectord& xin)
+    {
+        if (xin.size() != 2)
+        {
+            std::cout << "WARNING: This only works for 2D inputs."   << std::endl
+                      << "WARNING: Using only first two components." << std::endl;
+        }
+
+        double  result = 0.0;
+        vectord x      = xin;
+
+        x(0) = x(0) * 7 - 1;
+        x(1) = x(1) * 8 - 4;
+
+        vectord mu   (2  ); mu    <<= 1.5, 0.0;
+        matrixd sigma(2,2); sigma <<= 1.0, 0.0, 0.0, 1.0;
+        double  p                   = 0.2;
+
+        result += mgpdf(x,mu,sigma,p);
+
+        mu    <<= 3.0, 3.0;
+        sigma <<= 5.0, 0.0, 0.0, 1.0;
+        p       = 0.5;
+
+        result += mgpdf(x,mu,sigma,p);
+
+        mu    <<= 4.0, -1.0;
+        sigma <<= 2.0, -0.5, 0.5, 4.0;
+        p       = 0.5;
+
+        result += mgpdf(x,mu,sigma,p);
+
+        mu    <<= 0.0, -2.0;
+        sigma <<= 0.3, 0, 0, 0.3;
+        p       = 0.1;
+
+        result += mgpdf(x,mu,sigma,p);
+
+        mu    <<= 2.0, 2.0;
+        sigma <<= 10.0, 0, 0, 10.0;
+        p       = 0.5;
+
+        result += mgpdf(x,mu,sigma,p);
+
+        mu    <<= 2.0, -1.0;
+        sigma <<= 5.0, 0, 0, 5.0;
+        p       = 0.5;
+
+        result += mgpdf(x,mu,sigma,p);
+
+        return -result;
+    };
+
+
+
+    double mgpdf(const vectord& x, const vectord& mu, const matrixd& S, double p)
+    {
+        size_t  n = mu.size();
+        matrixd L(n,n);
+
+        bayesopt::utils::cholesky_decompose(S,L);
+
+        vectord u = mu - x;
+
+        inplace_solve(L,u,boost::numeric::ublas::lower_tag());
+
+        double quad = boost::numeric::ublas::inner_prod(u,u) /2.0;
+        double det  = bayesopt::utils::log_trace(L);
+        double cst  = n * std::log(M_PI) / 2.0;
+
+        return p * std::exp(-quad-det-cst);
+    }
+
+    bool checkReachability(const vectord &query)
+    {
+        return true;
+    };
+
+
+    void printOptimal(void) { }
+
 };
 
 

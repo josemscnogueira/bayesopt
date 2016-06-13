@@ -23,6 +23,7 @@
 
 #include <typeinfo>
 #include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 namespace bayesopt
 {
@@ -78,6 +79,9 @@ namespace bayesopt
 
     boost::numeric::ublas::vector<double> array2vector(const double array[], 
 						       const size_t n);
+
+    boost::numeric::ublas::matrix<double> array2matrix(const double array[],
+                               const size_t n);
 
   } //  namespace utils
 } //namespace bayesopt

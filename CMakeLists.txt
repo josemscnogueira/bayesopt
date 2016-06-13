@@ -107,6 +107,7 @@ SET( BAYESOPT_SRCS
   ./src/kernel_functors.cpp
   ./src/criteria_functors.cpp
   ./src/criteria_hedge.cpp
+  ./src/criteria_uei.cpp
   ./src/mean_functors.cpp
   ./src/gauss_distribution.cpp
   ./src/student_t_distribution.cpp

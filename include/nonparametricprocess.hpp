@@ -91,6 +91,7 @@ namespace bayesopt
     double getValueAtMinimum();
     const Dataset* getData();
     double getSignalVariance();
+    size_t getDim();
     
     virtual size_t nHyperParameters() = 0;
     virtual vectord getHyperParameters() = 0;
@@ -116,6 +117,9 @@ namespace bayesopt
 
   inline double NonParametricProcess::getSignalVariance() 
   { return mSigma; };
+
+  inline size_t NonParametricProcess::getDim()
+  { return dim_; }
 
   /**@}*/
   

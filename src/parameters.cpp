@@ -1,16 +1,16 @@
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -29,16 +29,17 @@
 /*-----------------------------------------------------------*/
 
 /* Nonparametric process "parameters" */
-const std::string KERNEL_NAME = "kMaternARD5";
-const double KERNEL_THETA    = 1.0;
-const double KERNEL_SIGMA    = 10.0;
-const std::string MEAN_NAME = "mConst";
-const double MEAN_MU         = 1.0;
-const double MEAN_SIGMA      = 1000.0;
-const double PRIOR_ALPHA     = 1.0;
-const double PRIOR_BETA      = 1.0;
-const double DEFAULT_SIGMA   = 1.0;
-const double DEFAULT_NOISE   = 1e-6;
+const std::string KERNEL_NAME         = "kMaternARD5";
+const double      KERNEL_THETA        = 1.0;
+const double      KERNEL_SIGMA        = 10.0;
+const std::string MEAN_NAME           = "mConst";
+const double      MEAN_MU             = 1.0;
+const double      MEAN_SIGMA          = 1000.0;
+const double      PRIOR_ALPHA         = 1.0;
+const double      PRIOR_BETA          = 1.0;
+const double      DEFAULT_SIGMA       = 1.0;
+const double      DEFAULT_NOISE       = 1e-6;
+const double      DEFAULT_INPUT_NOISE = 1e-3;
 
 /* Algorithm parameters */
 const size_t DEFAULT_ITERATIONS         = 190;
@@ -68,10 +69,10 @@ const char* learn2str(learning_type name)
 {
   switch(name)
     {
-    case L_FIXED:     return "L_FIXED"; 
-    case L_EMPIRICAL: return "L_EMPIRICAL"; 
-    case L_DISCRETE:  return "L_DISCRETE"; 
-    case L_MCMC:      return "L_MCMC"; 
+    case L_FIXED:     return "L_FIXED";
+    case L_EMPIRICAL: return "L_EMPIRICAL";
+    case L_DISCRETE:  return "L_DISCRETE";
+    case L_MCMC:      return "L_MCMC";
     case L_ERROR:
     default: return "ERROR!";
     }
@@ -90,10 +91,10 @@ const char* score2str(score_type name)
 {
   switch(name)
     {
-    case SC_MTL:   return "SC_MTL"; 
-    case SC_ML:    return "SC_ML"; 
-    case SC_MAP:   return "SC_MAP"; 
-    case SC_LOOCV: return "SC_LOOCV"; 
+    case SC_MTL:   return "SC_MTL";
+    case SC_ML:    return "SC_ML";
+    case SC_MAP:   return "SC_MAP";
+    case SC_LOOCV: return "SC_LOOCV";
     case SC_ERROR:
     default: return "ERROR!";
     }
@@ -155,7 +156,7 @@ bopt_params initialize_parameters_to_default(void)
   kernel.hp_mean[0] = KERNEL_THETA;
   kernel.hp_std[0]  = KERNEL_SIGMA;
   kernel.n_hp       = 1;
-  
+
   mean_parameters mean;
   mean.name = new char[128];
   strcpy(mean.name,MEAN_NAME.c_str());
@@ -163,7 +164,11 @@ bopt_params initialize_parameters_to_default(void)
   mean.coef_mean[0] = MEAN_MU;
   mean.coef_std[0]  = MEAN_SIGMA;
   mean.n_coef       = 1;
-  
+
+  input_parameters input;
+                   input.noise[0] = DEFAULT_INPUT_NOISE;
+                   input.n_coef   = 1;
+
 
   bopt_params params;
 
@@ -200,13 +205,14 @@ bopt_params initialize_parameters_to_default(void)
 
   params.epsilon = 0.0;
   params.force_jump = 20;
-  
+
   params.crit_name = new char[128];
   strcpy(params.crit_name,CRIT_NAME.c_str());
   params.n_crit_params = 0;
 
   params.kernel = kernel;
   params.mean = mean;
+  params.input = input;
 
   return params;
 }
@@ -238,60 +244,72 @@ namespace bayesopt {
     }
 
     /*
+     * InputParameters Class
+     */
+    InputParameters::InputParameters(void):
+    noise_matrix(1,1)
+    {
+        noise_matrix(0,0) = DEFAULT_INPUT_NOISE;
+    }
+    
+    /*
      * Parameters Class
      */
     Parameters::Parameters():
-        kernel(), mean(), crit_params(){
+        kernel(), mean(), input(), crit_params(){
         // Set default values
         init_default();
     }
-        
+
     Parameters::Parameters(bopt_params c_params):
-        kernel(), mean(), crit_params(){
+        kernel(), mean(), crit_params()
+    {
         n_iterations = c_params.n_iterations;
         n_inner_iterations = c_params.n_inner_iterations;
         n_init_samples = c_params.n_init_samples;
         n_iter_relearn = c_params.n_iter_relearn;
-        
+
         init_method = c_params.init_method;
         random_seed = c_params.random_seed;
-        
+
         verbose_level = c_params.verbose_level;
-        
+
         log_filename = std::string(c_params.log_filename);
         load_save_flag = c_params.load_save_flag;
         load_filename = std::string(c_params.load_filename);
         save_filename = std::string(c_params.save_filename);
-        
+
         surr_name = std::string(c_params.surr_name);
         sigma_s = c_params.sigma_s;
-        
+
         noise = c_params.noise;
         alpha = c_params.alpha;
         beta = c_params.beta;
-        
+
         sc_type = c_params.sc_type;
         l_type = c_params.l_type;
-        
+
         l_all = c_params.l_all;
-        
+
         epsilon = c_params.epsilon;
         force_jump = c_params.force_jump;
-        
+
         kernel.name = std::string(c_params.kernel.name);
-        kernel.hp_mean = bayesopt::utils::array2vector(c_params.kernel.hp_mean, 
+        kernel.hp_mean = bayesopt::utils::array2vector(c_params.kernel.hp_mean,
 						       c_params.kernel.n_hp);
-        kernel.hp_std = bayesopt::utils::array2vector(c_params.kernel.hp_std, 
+        kernel.hp_std = bayesopt::utils::array2vector(c_params.kernel.hp_std,
 						      c_params.kernel.n_hp);
- 
+
         mean.name = std::string(c_params.mean.name);
-        mean.coef_mean = bayesopt::utils::array2vector(c_params.mean.coef_mean, 
+        mean.coef_mean = bayesopt::utils::array2vector(c_params.mean.coef_mean,
 						       c_params.mean.n_coef);
-        mean.coef_std = bayesopt::utils::array2vector(c_params.mean.coef_std, 
+        mean.coef_std = bayesopt::utils::array2vector(c_params.mean.coef_std,
 						      c_params.mean.n_coef);
-        
+
+        input.noise_matrix = bayesopt::utils::array2matrix(c_params.input.noise,
+						                                   c_params.input.n_coef);
         crit_name = c_params.crit_name;
-        crit_params = bayesopt::utils::array2vector(c_params.crit_params, 
+        crit_params = bayesopt::utils::array2vector(c_params.crit_params,
 						    c_params.n_crit_params);
     }
 
@@ -302,33 +320,33 @@ namespace bayesopt {
       c_params.n_inner_iterations = n_inner_iterations;
       c_params.n_init_samples = n_init_samples;
       c_params.n_iter_relearn = n_iter_relearn;
-        
+
       c_params.init_method = init_method;
       c_params.random_seed = random_seed;
-        
+
       c_params.verbose_level = verbose_level;
-        
+
       strcpy(c_params.log_filename, log_filename.c_str());
       c_params.load_save_flag = load_save_flag;
       strcpy(c_params.load_filename, load_filename.c_str());
       strcpy(c_params.save_filename, save_filename.c_str());
-        
+
       strcpy(c_params.surr_name, surr_name.c_str());
       c_params.sigma_s = sigma_s;
-        
+
       c_params.noise = noise;
       c_params.alpha = alpha;
       c_params.beta = beta;
-        
+
       c_params.sc_type = sc_type;
-        
+
       c_params.l_type = l_type;
-        
+
       c_params.l_all = l_all;
-        
+
       c_params.epsilon = epsilon;
       c_params.force_jump = force_jump;
-        
+
       strcpy(c_params.kernel.name, kernel.name.c_str());
       //TODO (Javier): Should it be necessary to check size?
       for(size_t i=0; i<kernel.hp_mean.size(); i++){
@@ -338,7 +356,7 @@ namespace bayesopt {
 	c_params.kernel.hp_std[i] = kernel.hp_std[i];
       }
       c_params.kernel.n_hp = kernel.hp_std.size();
-        
+
       strcpy(c_params.mean.name, mean.name.c_str());
       for(size_t i=0; i<mean.coef_mean.size(); i++){
 	c_params.mean.coef_mean[i] = mean.coef_mean[i];
@@ -347,13 +365,21 @@ namespace bayesopt {
 	c_params.mean.coef_std[i] = mean.coef_std[i];
       }
       c_params.mean.n_coef = mean.coef_std.size();
-        
+
+      for (size_t row = 0; row < input.noise_matrix.size1(); ++row)
+      {
+         for (size_t col = 0; col < input.noise_matrix.size2(); ++col)
+         {
+             c_params.input.noise[col + (row * input.noise_matrix.size1())] = input.noise_matrix(row,col);
+         }
+      }
+      c_params.input.n_coef = input.noise_matrix.size1() * input.noise_matrix.size2();
       strcpy(c_params.crit_name, crit_name.c_str());
       for(size_t i=0; i<crit_params.size(); i++){
 	c_params.crit_params[i] = crit_params[i];
       }
       c_params.n_crit_params = crit_params.size();
-        
+
       return c_params;
     }
 
@@ -383,31 +409,31 @@ namespace bayesopt {
         n_inner_iterations = DEFAULT_INNER_EVALUATIONS;
         n_init_samples = DEFAULT_INIT_SAMPLES;
         n_iter_relearn = DEFAULT_ITERATIONS_RELEARN;
-        
+
         init_method = 1;
         random_seed = -1;
-        
+
         verbose_level = DEFAULT_VERBOSE;
         log_filename = LOG_FILENAME;
-        
+
         load_save_flag = 0;
         load_filename = LOAD_FILENAME;
         save_filename = SAVE_FILENAME;
-        
+
         surr_name = SURR_NAME;
-        
+
         sigma_s = DEFAULT_SIGMA;
         noise = DEFAULT_NOISE;
         alpha = PRIOR_ALPHA;
         beta = PRIOR_BETA;
-        
+
         l_all = false;
         l_type = L_EMPIRICAL;
         sc_type = SC_MAP;
-        
+
         epsilon = 0.0;
         force_jump = 20;
-        
+
         crit_name = CRIT_NAME;
     }
 }//namespace bayesopt

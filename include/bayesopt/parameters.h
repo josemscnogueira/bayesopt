@@ -77,7 +77,12 @@ extern "C" {
     size_t n_coef;               /**< Number of mean funct. hyperparameters */
   } mean_parameters;
 
-  /** \brief Configuration parameters 
+  typedef struct {
+    double noise[256];           /**< Basis function coefficients (mean) */
+    size_t n_coef;               /**< Number of mean funct. hyperparameters */
+} input_parameters;
+
+  /** \brief Configuration parameters
    *  @see \ref reference for a full description of the parameters
    */
   typedef struct {
@@ -124,9 +129,10 @@ extern "C" {
 
     kernel_parameters kernel;    /**< Kernel parameters */
     mean_parameters mean;        /**< Mean (parametric function) parameters */
+    input_parameters input;      /**< Input noise                parameters */
 
     char* crit_name;             /**< Name of the criterion */
-    double crit_params[128];     /**< Criterion hyperparameters (if needed) */
+    double crit_params[256];     /**< Criterion hyperparameters (if needed) */
     size_t n_crit_params;        /**< Number of criterion hyperparameters */
   } bopt_params;
 						    

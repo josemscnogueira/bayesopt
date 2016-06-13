@@ -32,5 +32,22 @@ namespace bayesopt
       return v;
     }
 
+    boost::numeric::ublas::matrix<double> array2matrix(const double array[],
+                               const size_t n)
+    {
+        // Determine Matrix size
+        size_t matrix_size = sqrt(n);
+
+        // Check if array size correponds to a perfect square matrix
+        if ( matrix_size != sqrt(n) ) throw std::length_error("Array size does not correspond to a perfect square");
+
+        // Copy data from array to matrix
+        boost::numeric::ublas::matrix<double> m(matrix_size,matrix_size);
+        std::copy(array, array+n, m.data().begin());
+
+        // Return ublas::matrix
+        return m;
+    }
+
   } //  namespace utils
 } //namespace bayesopt

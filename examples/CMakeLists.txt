@@ -43,6 +43,11 @@ ADD_EXECUTABLE(bo_hartmann ./bo_hartmann.cpp )
 add_dependencies(bo_hartmann bayesopt)
 TARGET_LINK_LIBRARIES(bo_hartmann bayesopt)
 
+#GaussianMixture2D
+ADD_EXECUTABLE(gaussian_mixture_cuei ./gaussian_mixture_cuei.cpp )
+add_dependencies(gaussian_mixture_cuei bayesopt)
+TARGET_LINK_LIBRARIES(gaussian_mixture_cuei bayesopt)
+
 #Camelback
 ADD_EXECUTABLE(bo_camelback ./bo_camelback.cpp )
 add_dependencies(bo_camelback bayesopt)
