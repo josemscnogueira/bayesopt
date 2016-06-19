@@ -59,7 +59,7 @@ find_package(GLUT)
 find_package(OpenGL)
 if(OPENGL_FOUND AND GLUT_FOUND)
 
-  SET(DISPLAY_SRC     
+  SET(DISPLAY_SRC
     ../utils/displaygp.cpp
     )
 
@@ -69,9 +69,9 @@ if(OPENGL_FOUND AND GLUT_FOUND)
 
 
   INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/matplotpp
-		      ${GLUT_INCLUDE_DIRS} 
-		      ${GLUT_INCLUDE_DIR} 
-		      ${OpenGL_INCLUDE_DIRS})			  
+		      ${GLUT_INCLUDE_DIRS}
+		      ${GLUT_INCLUDE_DIR}
+		      ${OpenGL_INCLUDE_DIRS})
 
   link_directories(${GLUT_LIBRARY_DIRS}
 		   ${OpenGL_LIBRARY_DIRS})
@@ -79,23 +79,23 @@ if(OPENGL_FOUND AND GLUT_FOUND)
   add_definitions(${GLUT_DEFINITIONS}
 		  ${OpenGL_DEFINITIONS})
 
-  ADD_LIBRARY(matplotpp STATIC 
-    ../matplotpp/matplotpp.cc 
+  ADD_LIBRARY(matplotpp STATIC
+    ../matplotpp/matplotpp.cc
     ../matplotpp/gl2ps.c
     )
 
   TARGET_LINK_LIBRARIES(matplotpp
     ${GLUT_LIBRARY} ${OPENGL_LIBRARY})
 
-  ADD_EXECUTABLE(bo_display 
-    ./bo_display.cpp 
+  ADD_EXECUTABLE(bo_display
+    ./bo_display.cpp
     ${DISPLAY_SRC})
   add_dependencies(bo_display bayesopt matplotpp)
   TARGET_LINK_LIBRARIES(bo_display bayesopt matplotpp
     ${GLUT_LIBRARY} ${OPENGL_LIBRARY})
 
   ADD_EXECUTABLE(bo_branin_display
-    ./bo_branin_display.cpp 
+    ./bo_branin_display.cpp
     ${DISPLAY_SRC})
   add_dependencies(bo_branin_display bayesopt matplotpp)
   TARGET_LINK_LIBRARIES(bo_branin_display bayesopt matplotpp

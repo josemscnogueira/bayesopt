@@ -566,9 +566,9 @@ namespace bayesopt {
         if (config["kernel"].isNull() != true)
             kernel.loadJson(config["kernel"]);
         if (config["mean"  ].isNull() != true)
-            kernel.loadJson(config["mean"  ]);
+            mean  .loadJson(config["mean"  ]);
         if (config["input" ].isNull() != true)
-            kernel.loadJson(config["input" ]);
+            input .loadJson(config["input" ]);
 
         if (config["n_iterations"      ].isNull() != true)
             n_iterations       = config["n_iterations"      ].asUInt64();
