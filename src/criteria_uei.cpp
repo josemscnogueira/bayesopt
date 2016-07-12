@@ -65,7 +65,7 @@ void UnscentedExpectedImprovement::init(NonParametricProcess* proc)
     _scale = 1;
     _alpha = 0.0;
     _dim   = proc -> getDim();
-    _px    = boost::numeric::ublas::identity_matrix<double>(_dim) * 0.01 * std::sqrt(_dim + _scale);
+    _px    = imatrixd(_dim) * 0.01 * std::sqrt(_dim + _scale);
 
     if (_criteria == NULL)
     {
@@ -84,6 +84,13 @@ void UnscentedExpectedImprovement::init(NonParametricProcess* proc)
 void UnscentedExpectedImprovement::setParameters(const vectord& params)
 {
     if (_criteria != NULL) _criteria -> setParameters(params);
+
+    if (params.size() < 4)
+    {
+        FILE_LOG(logERROR) << "Wrong number of criteria params";
+
+        exit(-1);
+    }
 
     if (params(2)  < 0) _scale = 3 - _dim;
     else                _scale = params(2);
@@ -295,6 +302,21 @@ void UnscentedExpectedImprovement::convertMatrixToParams(Parameters& params, con
             params.crit_params[4 + col + (row * dim)] = px(row, col);
         }
     }
+}
+
+/**
+ * [UnscentedExpectedImprovement::convertMatrixToParams description]
+ * @param params [description]
+ */
+int UnscentedExpectedImprovement::convertMatrixToParams(Parameters& params, const uint dims)
+{
+    matrixd px = params.input.noise_matrix;
+
+    if (dims != px.size1()) return -1;
+
+    convertMatrixToParams(params, px);
+
+    return 0;
 }
 
 } //namespace bayesopt

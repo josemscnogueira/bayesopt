@@ -106,6 +106,8 @@ matrixd TGPOptimizable::getUncertaintyMatrixNormalized(double std_dev = 0.01)
     tgp_params.min_data_per_leaf = 10;
     tgp_params.wheight_power     =  1;
     tgp_params.wheight_threshold =  0.00;
+
+    setUEIMatrix(opt_params);
 }
 
 
