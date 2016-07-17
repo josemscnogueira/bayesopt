@@ -433,7 +433,11 @@ bool TGPNode::isEqual(TGPNode* node)
             {
                 return false;
             }
+        }
 
+        // Check if right child is equal
+        if ( ( _r_child != NULL ) && ( _r_child != NULL ) )
+        {
             if ( _r_child -> isEqual(node -> _r_child) == false)
             {
                 return false;
@@ -517,6 +521,10 @@ void TGPNode::createSplit(std::vector<uint>& div_left, std::vector<uint>& div_ri
     _type      = NON_LEAF;
     _threshold = threshold;
     _feature   = feature;
+
+    // Set surrogate models and criteria for childs
+    _l_child -> setTree();
+    _r_child -> setTree();
 
     // Delete Node data
     delete _data; _data = NULL;
@@ -776,6 +784,7 @@ void TGPNode::setCriteria(void)
         CriteriaFactory mcfactory;
 
         _crit.clear();
+
         for (uint index = 0; index < tgpparams.mcmc_particles; index += 1)
         {
             _crit.push_back(mcfactory.create(parameters.crit_name, &_gp[index]));
@@ -795,6 +804,8 @@ void TGPNode::setCriteria(void)
                 }
 
                 FILE_LOG(logERROR)     << "Using default parameters for criteria.";
+
+                exit(-1);
             }
         }
     }

@@ -1,16 +1,16 @@
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -43,38 +43,26 @@ namespace bayesopt
       }
   };
 
-  PosteriorModel::PosteriorModel(size_t dim, Parameters parameters, 
+  PosteriorModel::PosteriorModel(size_t dim, Parameters parameters,
 				 randEngine& eng):
     mParameters(parameters), mDims(dim), mMean(dim, parameters)
-  {} 
+  {}
 
   PosteriorModel::~PosteriorModel()
   { } // Default destructor
 
 
   void PosteriorModel::setSamples(const matrixd &x, const vectord &y)
-  { 
-    mData.setSamples(x,y);  
-    mMean.setPoints(mData.mX);  //Because it expects a vecOfvec instead of a matrixd 
+  {
+    mData.setSamples(x,y);
+    mMean.setPoints(mData.getSamplesX());  //Because it expects a vecOfvec instead of a matrixd 
   }
-
-  void PosteriorModel::setSamples(const matrixd &x)
-  { 
-    mData.setSamples(x);  
-    mMean.setPoints(mData.mX);  //Because it expects a vecOfvec instead of a matrixd 
-  }
-
-  void PosteriorModel::setSamples(const vectord &y)
-  { 
-    mData.setSamples(y);  
-  }
-
 
   void PosteriorModel::setSample(const vectord &x, double y)
-  { 
+  {
     matrixd xx(1,x.size());  vectord yy(1);
     row(xx,0) = x;           yy(0) = y;
-    mData.setSamples(xx,yy);   
+    mData.setSamples(xx,yy);
     mMean.setPoints(mData.mX);  //Because it expects a vecOfvec instead of a matrixd
   }
 
@@ -83,4 +71,3 @@ namespace bayesopt
 
 
 } //namespace bayesopt
-

@@ -7,7 +7,7 @@
 
 namespace bayesopt
 {
-  
+
   MeanFactory::MeanFactory()
   {
     registry["mZero"] = & create_func<ZeroFunction>;
@@ -18,7 +18,7 @@ namespace bayesopt
   }
 
 
-  /** 
+  /**
    * \brief Factory model for kernel functions
    * This function is based on the libgp library by Manuel Blum
    *      https://bitbucket.org/mblum/libgp
@@ -35,20 +35,20 @@ namespace bayesopt
     utils::parseExpresion(name,os,os1,os2);
 
     std::map<std::string,MeanFactory::create_func_definition>::iterator it = registry.find(os);
-    if (it == registry.end()) 
+    if (it == registry.end())
       {
 	FILE_LOG(logERROR) << "Error: Fatal error while parsing mean function: "
 			   << os << " not found" << std::endl;
 	return NULL;
-      } 
+      }
     mFunc = registry.find(os)->second();
-    if (os1.length() == 0 && os2.length() == 0) 
+    if (os1.length() == 0 && os2.length() == 0)
       {
 	mFunc->init(input_dim);
-      } 
-    else 
+      }
+    else
       {
-	mFunc->init(input_dim, create(os1,input_dim), 
+	mFunc->init(input_dim, create(os1,input_dim),
 		    create(os2,input_dim));
       }
     return mFunc;
@@ -71,12 +71,12 @@ namespace bayesopt
 
     mMean.reset(mPFactory.create(m_name,dim));
 
-    if ("mZero" == m_name) 
+    if ("mZero" == m_name)
       {
 	mMu = zvectord(1);
 	mS_Mu = svectord(1,1e-10);
       }
-    else if("mOne" == m_name) 
+    else if("mOne" == m_name)
       {
 	mMu = svectord(1,1.0);
 	mS_Mu = svectord(1,1e-10);
@@ -87,6 +87,11 @@ namespace bayesopt
       }
 
     mMean->setParameters(mMu);
+
+    if(mFeatM.size1() == 0)
+    {
+      mFeatM.resize(mMean->getFeatures(vectord(dim,0.5)).size(),mFeatM.size2());
+    }
   }
 
   void MeanModel::setMean (MeanParameters mean, size_t dim)
@@ -98,6 +103,3 @@ namespace bayesopt
   };
 
 }//namespace bayesopt
-
-
-

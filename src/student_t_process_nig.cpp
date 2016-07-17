@@ -95,7 +95,7 @@ namespace bayesopt
     const size_t p = mMean.nFeatures();
     const size_t nalpha = (n+2*mAlpha);
 
-    vectord v0 = mData.mY - prod(trans(mMean.mFeatM),mW0);
+    vectord v0 = mData.getSamplesY() - prod(trans(mMean.mFeatM),mW0);
     matrixd WW = zmatrixd(p,p);  //TODO: diagonal matrix
     utils::add_to_diagonal(WW,mInvVarW);
     matrixd FW = prod(trans(mMean.mFeatM),WW);
@@ -127,15 +127,15 @@ namespace bayesopt
     utils::add_to_diagonal(DD,mInvVarW);
     utils::cholesky_decompose(DD,mD);
 
-    vectord vn = mData.mY;
+    vectord vn = mData.getSamplesY();
     inplace_solve(mL,vn,ublas::lower_tag());
     mWMap = prod(mMean.mFeatM,vn) + utils::ublas_elementwise_prod(mInvVarW,mW0);
     utils::cholesky_solve(mD,mWMap,ublas::lower());
 
-    mVf = mData.mY - prod(trans(mMean.mFeatM),mWMap);
+    mVf = mData.getSamplesY() - prod(trans(mMean.mFeatM),mWMap);
     inplace_solve(mL,mVf,ublas::lower_tag());
 
-    vectord v0 = mData.mY - prod(trans(mMean.mFeatM),mW0);
+    vectord v0 = mData.getSamplesY() - prod(trans(mMean.mFeatM),mW0);
     //TODO: check for "cheaper" version
     //matrixd KK = prod(mL,trans(mL));
     matrixd KK = computeCorrMatrix();

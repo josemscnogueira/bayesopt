@@ -1,16 +1,16 @@
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -28,7 +28,7 @@ namespace bayesopt
 {
 
 
-  EmpiricalBayes::EmpiricalBayes(size_t dim, Parameters parameters, 
+  EmpiricalBayes::EmpiricalBayes(size_t dim, Parameters parameters,
 				 randEngine& eng):
     PosteriorModel(dim,parameters,eng)
   {
@@ -44,7 +44,7 @@ namespace bayesopt
     if (mParameters.sc_type == SC_ML)
       {
 	// local search to avoid underfitting
-	kOptimizer->setAlgorithm(BOBYQA); 
+	kOptimizer->setAlgorithm(BOBYQA);
 	kOptimizer->setMaxEvals(10*nhp);
       }
     else
@@ -54,7 +54,7 @@ namespace bayesopt
       }
     //Limits in log space
     kOptimizer->setLimits(svectord(nhp,-6.0),svectord(nhp,1.0));
-  } 
+  }
 
   EmpiricalBayes::~EmpiricalBayes()
   { } // Default destructor
@@ -68,7 +68,7 @@ namespace bayesopt
     FILE_LOG(logDEBUG) << "Initial hyper parameters: " << optimalTheta;
     kOptimizer->run(optimalTheta);
     mGP->setHyperParameters(optimalTheta);
-    FILE_LOG(logDEBUG) << "Final hyper parameters: " << optimalTheta;	
+    FILE_LOG(logDEBUG) << "Final hyper parameters: " << optimalTheta;
   };
 
 
@@ -93,14 +93,13 @@ namespace bayesopt
       {
 	if (mParameters.crit_params.size() != 0)
 	  {
-	    FILE_LOG(logERROR) << "Expected " << mCrit->nParameters() 
-			       << " parameters. Got " 
+	    FILE_LOG(logERROR) << "Expected " << mCrit->nParameters()
+			       << " parameters. Got "
 			       << mParameters.crit_params.size() << " instead.";
 	  }
-	FILE_LOG(logINFO) << "Using default parameters for criteria.";
+	FILE_LOG(logINFO) << "Using default parameters for criteria."; exit(-1);
       }
   } // setCriteria
 
 
 } //namespace bayesopt
-

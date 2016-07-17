@@ -87,13 +87,13 @@ namespace bayesopt
     mL2 = FKF;
     utils::cholesky_decompose(FKF,mL2);
 
-    vectord Ky(mData.mY);
+    vectord Ky(mData.getSamplesY());
     inplace_solve(mL,Ky,ublas::lower_tag());
 
     mWML = prod(Ky,mKF);
     utils::cholesky_solve(mL2,mWML,ublas::lower());
 
-    mAlphaF = mData.mY - prod(mWML,mMean.mFeatM);
+    mAlphaF = mData.getSamplesY() - prod(mWML,mMean.mFeatM);
     inplace_solve(mL,mAlphaF,ublas::lower_tag());
     mSigma = inner_prod(mAlphaF,mAlphaF)/(n-p);
   }

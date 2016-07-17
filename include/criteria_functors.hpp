@@ -2,17 +2,17 @@
      for criteria */
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -74,7 +74,7 @@ namespace bayesopt
   };
 
 
-  /** 
+  /**
    * \brief Factory model for criterion functions
    * This factory is based on the libgp library by Manuel Blum
    *      https://bitbucket.org/mblum/libgp
@@ -86,10 +86,10 @@ namespace bayesopt
   public:
     CriteriaFactory ();
     virtual ~CriteriaFactory () {};
-  
+
     //Criteria* create(criterium_name name, NonParametricProcess* proc);
     Criteria* create(std::string name, NonParametricProcess* proc);
-    
+
   private:
     typedef Criteria* (*create_func_definition)();
     std::map<std::string , CriteriaFactory::create_func_definition> registry;

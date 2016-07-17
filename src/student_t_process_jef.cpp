@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
    Copyright (C) 2011 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
@@ -23,11 +23,11 @@
 namespace bayesopt
 {
 
-  namespace ublas = boost::numeric::ublas; 
+  namespace ublas = boost::numeric::ublas;
 
-  StudentTProcessJeffreys::StudentTProcessJeffreys(size_t dim, 
-						   Parameters params, 
-						   const Dataset& data, 
+  StudentTProcessJeffreys::StudentTProcessJeffreys(size_t dim,
+						   Parameters params,
+						   const Dataset& data,
 						   MeanModel& mean,
 						   randEngine& eng):
     HierarchicalGaussianProcess(dim, params, data, mean, eng)
@@ -52,15 +52,15 @@ namespace bayesopt
   }
 
 
-  ProbabilityDistribution* 
+  ProbabilityDistribution*
   StudentTProcessJeffreys::prediction(const vectord &query )
   {
     clock_t start = clock();
     double kq = computeSelfCorrelation(query);
     //    vectord kn = computeCrossCorrelation(query);
-    mKernel.computeCrossCorrelation(mData.mX,query,mKn);
+    mKernel.computeCrossCorrelation(mData.getSamplesX(),query,mKn);
     vectord phi = mMean.getFeatures(query);
-  
+
     //    vectord v(mKn);
     inplace_solve(mL,mKn,ublas::lower_tag());
 
@@ -68,9 +68,9 @@ namespace bayesopt
 
     //    vectord rho(rq);
     inplace_solve(mL2,rho,ublas::lower_tag());
-    
+
     double yPred = inner_prod(phi,mWML) + inner_prod(mKn,mAlphaF);
-    double sPred = sqrt( mSigma * (kq - inner_prod(mKn,mKn) 
+    double sPred = sqrt( mSigma * (kq - inner_prod(mKn,mKn)
 				   + inner_prod(rho,rho)));
 
     d_->setMeanAndStd(yPred,sPred);
@@ -91,17 +91,17 @@ namespace bayesopt
     mL2 = FKF;
     utils::cholesky_decompose(FKF,mL2);
 
-    vectord Ky(mData.mY);
+    vectord Ky(mData.getSamplesY());
     inplace_solve(mL,Ky,ublas::lower_tag());
 
     mWML = prod(Ky,mKF);
     utils::cholesky_solve(mL2,mWML,ublas::lower());
 
-    mAlphaF = mData.mY - prod(mWML,mMean.mFeatM);
+    mAlphaF = mData.getSamplesY() - prod(mWML,mMean.mFeatM);
     inplace_solve(mL,mAlphaF,ublas::lower_tag());
     mSigma = inner_prod(mAlphaF,mAlphaF)/(n-p);
-    
-    d_->setDof(n-p);  
+
+    d_->setDof(n-p);
   }
 
 } //namespace bayesopt

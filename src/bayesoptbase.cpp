@@ -1,16 +1,16 @@
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -36,15 +36,18 @@ namespace bayesopt
     mParameters(parameters), mDims(dim)
   {
     // Random seed
-    if (mParameters.random_seed < 0) mParameters.random_seed = std::time(0); 
+    if (mParameters.random_seed < 0) mParameters.random_seed = std::time(0);
     mEngine.seed(mParameters.random_seed);
-    
+
+    // Posterior surrogate model
+    mModel.reset(PosteriorModel::create(dim,parameters,mEngine));
+
     // Setting verbose stuff (files, levels, etc.)
     int verbose = mParameters.verbose_level;
     if (verbose>=3)
       {
 	FILE* log_fd = fopen( mParameters.log_filename.c_str() , "w" );
-	Output2FILE::Stream() = log_fd; 
+	Output2FILE::Stream() = log_fd;
 	verbose -= 3;
       }
 
@@ -66,24 +69,24 @@ namespace bayesopt
   void BayesOptBase::optimize(vectord &bestPoint)
   {
     assert(mDims == bestPoint.size());
-    
+
     // Restore state from file
     if(mParameters.load_save_flag == 1 || mParameters.load_save_flag == 3)
       {
         BOptState state;
-        bool load_succeed = state.loadFromFile(mParameters.load_filename, 
+        bool load_succeed = state.loadFromFile(mParameters.load_filename,
 					       mParameters);
         if(load_succeed)
 	  {
             restoreOptimization(state);
-            FILE_LOG(logINFO) << "State succesfully restored from file \"" 
+            FILE_LOG(logINFO) << "State succesfully restored from file \""
 			      << mParameters.load_filename << "\"";
 	  }
         else
 	  {
 	    // If load not succeed, print info message and then
 	    // initialize a new optimization
-            FILE_LOG(logINFO) << "File \"" << mParameters.load_filename 
+            FILE_LOG(logINFO) << "File \"" << mParameters.load_filename
 			      << "\" does not exist,"
 			      << " starting a new optimization";
             initializeOptimization();
@@ -94,12 +97,12 @@ namespace bayesopt
 	// Initialize a new state
         initializeOptimization();
       }
-    
+
     for (size_t ii = mCurrentIter; ii < mParameters.n_iterations; ++ii)
-      {      
+      {
         stepOptimization();
       }
-   
+
     bestPoint = getFinalResult();
   } // optimize
 
@@ -107,7 +110,7 @@ namespace bayesopt
   void BayesOptBase::stepOptimization()
   {
     // Find what is the next point.
-    vectord xNext = nextPoint(); 
+    vectord xNext = nextPoint();
     double yNext = evaluateSampleInternal(xNext);
 
     // If we are stuck in the same point for several iterations, try a random jump!
@@ -136,7 +139,7 @@ namespace bayesopt
     mModel->addSample(xNext,yNext);
 
     // Update surrogate model
-    bool retrain = ((mParameters.n_iter_relearn > 0) && 
+    bool retrain = ((mParameters.n_iter_relearn > 0) &&
 		    ((mCurrentIter + 1) % mParameters.n_iter_relearn == 0));
 
     if (retrain)  // Full update
@@ -147,12 +150,12 @@ namespace bayesopt
     else          // Incremental update
       {
         mModel->updateSurrogateModel();
-      } 
+      }
 
     plotStepData(mCurrentIter,xNext,yNext);
     mModel->updateCriteria(xNext);
     mCurrentIter++;
-    
+
     // Save state if required
     if(mParameters.load_save_flag == 2 || mParameters.load_save_flag == 3)
       {
@@ -161,20 +164,21 @@ namespace bayesopt
         state.saveToFile(mParameters.save_filename);
       }
   }
-  
+
 
   void BayesOptBase::initializeOptimization()
   {
     // Posterior surrogate model
-    mModel.reset(PosteriorModel::create(mDims,mParameters,mEngine));
-    
+    if (!mModel)
+        mModel.reset(PosteriorModel::create(mDims,mParameters,mEngine));
+
     // Configure iteration parameters
     if (mParameters.n_init_samples <= 0)
       {
-        mParameters.n_init_samples = 
-          static_cast<size_t>(ceil(0.1*mParameters.n_iterations));	
+        mParameters.n_init_samples =
+          static_cast<size_t>(ceil(0.1*mParameters.n_iterations));
       }
-    
+
     size_t nSamples = mParameters.n_init_samples;
 
     // Generate xPoints for initial sampling
@@ -184,8 +188,7 @@ namespace bayesopt
     // Save generated xPoints before its evaluation
     generateInitialPoints(xPoints);
     saveInitialSamples(xPoints);
-    mModel->setSamples(xPoints);
-    
+
     // Save on each evaluation for safety reasons
     for(size_t i=0; i<yPoints.size(); i++)
       {
@@ -193,15 +196,15 @@ namespace bayesopt
 	//We clear the vector in the first iteration
         saveResponse(yPoints[i], i==0);
       }
-    
+
     // Put samples into model
-    mModel->setSamples(yPoints);
- 
+	mModel->setSamples(xPoints,yPoints);
+
     if(mParameters.verbose_level > 0)
       {
         mModel->plotDataset(logDEBUG);
       }
-    
+
     mModel->updateHyperParameters();
     mModel->fitSurrogateModel();
     mCurrentIter = 0;
@@ -218,7 +221,7 @@ namespace bayesopt
 
   // SAVE-RESTORE INTERFACE
   void BayesOptBase::saveOptimization(BOptState &state)
-  {   
+  {
     // BayesOptBase members
     state.mCurrentIter = mCurrentIter;
     state.mCounterStuck = mCounterStuck;
@@ -227,18 +230,18 @@ namespace bayesopt
     state.mParameters = mParameters;
 
     // Samples
-    state.mX = mModel->getData()->mX;
-    state.mY = mModel->getData()->mY;
+    state.mX = mModel->getData()->getSamplesX();
+    state.mY = mModel->getData()->getSamplesY();
   }
 
   void BayesOptBase::restoreOptimization(BOptState state)
   {
     // Restore parameters
-    mParameters = state.mParameters; 
-    
+    mParameters = state.mParameters;
+
     // Posterior surrogate model
     mModel.reset(PosteriorModel::create(mDims, mParameters, mEngine));
-    
+
     // Load samples, putting mX vecOfvec into a matrixd
     matrixd xPoints(state.mX.size(),state.mX[0].size());
     vectord yPoints(state.mX.size(),0);
@@ -251,48 +254,48 @@ namespace bayesopt
 	  }
 	else
 	  {
-	    // Generate remaining initial samples saving in each evaluation	    
+	    // Generate remaining initial samples saving in each evaluation
 	    yPoints[i] = evaluateSampleInternal(row(xPoints,i));
 	    saveResponse(yPoints[i], false);
 	  }
       }
-    
+
     // Set loaded and generated samples
     mModel->setSamples(xPoints,yPoints);
-        
+
     if(mParameters.verbose_level > 0)
     {
         mModel->plotDataset(logDEBUG);
     }
-    
+
     // Calculate the posterior model
     mModel->updateHyperParameters();
     mModel->fitSurrogateModel();
-    
+
     mCurrentIter = state.mCurrentIter;
     mCounterStuck = state.mCounterStuck;
     mYPrev = state.mYPrev;
-    
+
     // Check if optimization has already finished
     if(mCurrentIter >= mParameters.n_iterations)
       {
-        FILE_LOG(logINFO) << "Optimization has already finished, delete \"" 
-			  << mParameters.load_filename 
-			  << "\" or give more n_iterations in parameters."; 
+        FILE_LOG(logINFO) << "Optimization has already finished, delete \""
+			  << mParameters.load_filename
+			  << "\" or give more n_iterations in parameters.";
       }
   }
 
-  
+
   // GETTERS AND SETTERS
   // Potential inline functions. Moved here to simplify API and header
   // structure.
   ProbabilityDistribution* BayesOptBase::getPrediction(const vectord& query)
   { return mModel->getPrediction(query); };
-  
+
   const Dataset* BayesOptBase::getData()
   { return mModel->getData(); };
 
-  Parameters* BayesOptBase::getParameters() 
+  Parameters* BayesOptBase::getParameters()
   {return &mParameters;};
 
   double BayesOptBase::getValueAtMinimum()
@@ -307,37 +310,37 @@ namespace bayesopt
   size_t BayesOptBase::getCurrentIter()
   {return mCurrentIter;};
 
-  
+
 
   // PROTECTED
-  vectord BayesOptBase::getPointAtMinimum() 
+  vectord BayesOptBase::getPointAtMinimum()
   { return mModel->getPointAtMinimum(); };
 
   double BayesOptBase::evaluateSampleInternal( const vectord &query )
-  { 
-    const double yNext = evaluateSample(remapPoint(query)); 
+  {
+    const double yNext = evaluateSample(remapPoint(query));
     if (yNext == HUGE_VAL)
       {
 	throw std::runtime_error("Function evaluation out of range");
       }
     return yNext;
-  }; 
+  };
 
 
 
-  
-  
+
+
   void BayesOptBase::plotStepData(size_t iteration, const vectord& xNext,
 				     double yNext)
   {
     if(mParameters.verbose_level >0)
-      { 
-	FILE_LOG(logINFO) << "Iteration: " << iteration+1 << " of " 
-			  << mParameters.n_iterations << " | Total samples: " 
+      {
+	FILE_LOG(logINFO) << "Iteration: " << iteration+1 << " of "
+			  << mParameters.n_iterations << " | Total samples: "
 			  << iteration+1+mParameters.n_init_samples ;
 	FILE_LOG(logINFO) << "Query: "         << remapPoint(xNext); ;
 	FILE_LOG(logINFO) << "Query outcome: " << yNext ;
-	FILE_LOG(logINFO) << "Best query: "    << getFinalResult(); 
+	FILE_LOG(logINFO) << "Best query: "    << getFinalResult();
 	FILE_LOG(logINFO) << "Best outcome: "  << getValueAtMinimum();
       }
   } //plotStepData
@@ -350,7 +353,7 @@ namespace bayesopt
       {
         BOptState state;
         saveOptimization(state);
-        
+
         // Overwrite the state with initial samples so far
         state.mX.clear();
         for(size_t i=0; i<xPoints.size1(); i++)
@@ -399,7 +402,7 @@ namespace bayesopt
 	  }
       }
 
-    vectord Xnext(mDims);    
+    vectord Xnext(mDims);
 
     // GP-Hedge and related algorithms
     if (mModel->criteriaRequiresComparison())
@@ -426,4 +429,3 @@ namespace bayesopt
 
 
 } //namespace bayesopt
-

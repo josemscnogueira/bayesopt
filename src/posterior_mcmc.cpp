@@ -1,16 +1,16 @@
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -24,12 +24,12 @@
 
 namespace bayesopt
 {
-  MCMCModel::MCMCModel(size_t dim, Parameters parameters, 
+  MCMCModel::MCMCModel(size_t dim, Parameters parameters,
 		       randEngine& eng):
     PosteriorModel(dim,parameters,eng), nParticles(10)
   {
     //TODO: Take nParticles from parameters
-    
+
     // Configure Surrogate and Criteria Functions
     setSurrogateModel(eng);
     setCriteria(eng);
@@ -61,7 +61,7 @@ namespace bayesopt
       {
 	mGP[i].setHyperParameters(kSampler->getParticle(i));
       }
-    FILE_LOG(logDEBUG) << "Final kernel parameters: " << lastTheta;	
+    FILE_LOG(logDEBUG) << "Final kernel parameters: " << lastTheta;
   };
 
 
@@ -71,7 +71,7 @@ namespace bayesopt
       {
 	mGP.push_back(NonParametricProcess::create(mDims,mParameters,
 						   mData,mMean,eng));
-      } 
+      }
   } // setSurrogateModel
 
   void MCMCModel::setCriteria(randEngine& eng)
@@ -91,11 +91,11 @@ namespace bayesopt
 	  {
 	    if (mParameters.crit_params.size() != 0)
 	      {
-		FILE_LOG(logERROR) << "Expected " << mCrit[i].nParameters() 
-				   << " parameters. Got " 
+		FILE_LOG(logERROR) << "Expected " << mCrit[i].nParameters()
+				   << " parameters. Got "
 				   << mParameters.crit_params.size() << " instead.";
 	      }
-	    FILE_LOG(logINFO) << "Using default parameters for criteria.";
+	    FILE_LOG(logINFO) << "Using default parameters for criteria."; exit(-1);
 	  }
       }
   } // setCriteria
