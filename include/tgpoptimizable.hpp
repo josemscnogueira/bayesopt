@@ -57,8 +57,8 @@ public:
     virtual void    unnormalizeVector             (vectord& x);
     virtual void    normalizeVector               (vectord& x);
 
-    virtual Json::Value getJson (void);
-    void                loadJson(Json::Value config);
+    virtual Json::Value getJson                   (void);
+    virtual void        loadJson                  (Json::Value config);
 
 };
 
