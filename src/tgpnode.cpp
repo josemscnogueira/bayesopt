@@ -724,8 +724,6 @@ void TGPNode::setSurrogateModel(void)
  **************************************************************************************************/
 void TGPNode::fitSurrogateModel(void)
 {
-    if (_index == 0) reduceTreeUncertainty();
-
     if (_type == LEAF)
     {
         if (_data -> getNSamples() == 0) return;
