@@ -522,10 +522,6 @@ void TGPNode::createSplit(std::vector<uint>& div_left, std::vector<uint>& div_ri
     _threshold = threshold;
     _feature   = feature;
 
-    // Set surrogate models and criteria for childs
-    _l_child -> setTree();
-    _r_child -> setTree();
-
     // Delete Node data
     delete _data; _data = NULL;
     delete _mean; _mean = NULL;
@@ -737,7 +733,6 @@ void TGPNode::fitSurrogateModel(void)
         for (uint index = 0; index <  _gp.size(); index += 1)
         {
             _gp[index].fitSurrogateModel();
-
         }
     }
     else
