@@ -198,6 +198,8 @@ namespace bayesopt {
     size_t mCurrentIter;                        ///< Current iteration number
     boost::mt19937 mEngine;                      ///< Random number generator
 
+    void updatePosteriorModel(void);
+
   protected:
     boost::scoped_ptr<PosteriorModel> mModel;
     double mYPrev;

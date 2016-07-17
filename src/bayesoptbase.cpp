@@ -218,6 +218,12 @@ namespace bayesopt
     return remapPoint(getPointAtMinimum());
   }
 
+  void BayesOptBase::updatePosteriorModel(void)
+  {
+      mModel->updateHyperParameters();
+      mModel->fitSurrogateModel();
+  }
+
 
   // SAVE-RESTORE INTERFACE
   void BayesOptBase::saveOptimization(BOptState &state)

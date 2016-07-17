@@ -1,16 +1,16 @@
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -39,17 +39,17 @@ namespace bayesopt  {
   {
   public:
     explicit CritCallback(ContinuousModel* model):mBO(model){};
-    double evaluate(const vectord &query) 
+    double evaluate(const vectord &query)
     {
       return mBO->evaluateCriteria(query);
     }
   private:
     ContinuousModel* mBO;
   };
-  
+
   ContinuousModel::ContinuousModel(size_t dim, Parameters parameters):
     BayesOptBase(dim,parameters)
-  { 
+  {
     mCallback.reset(new CritCallback(this));
     cOptimizer.reset(new NLOPT_Optimization(mCallback.get(),dim));
     cOptimizer->setAlgorithm(COMBINED);
@@ -73,7 +73,7 @@ namespace bayesopt  {
     // unit hypercube, thus the default inner optimization are just
     // right.
     mBB.reset(new utils::BoundingBox<vectord>(lowerBound,upperBound));
-    
+
     FILE_LOG(logINFO) << "Bounds: ";
     FILE_LOG(logINFO) << lowerBound;
     FILE_LOG(logINFO) << upperBound;
@@ -86,19 +86,33 @@ namespace bayesopt  {
   //////////////////////////////////////////////////////////////////////
 
   vectord ContinuousModel::samplePoint()
-  {	    
+  {
     randFloat drawSample(mEngine,realUniformDist(0,1));
-    vectord Xnext(mDims);    
+    vectord Xnext(mDims);
     for(vectord::iterator x = Xnext.begin(); x != Xnext.end(); ++x)
-      {	
-	*x = drawSample(); 
+      {
+	*x = drawSample();
       }
     return Xnext;
   };
 
   void ContinuousModel::findOptimal(vectord &xOpt)
-  { 
-    double minf = cOptimizer->run(xOpt);
+  {
+    double minf;
+
+    // Run NLOPT Optimization
+    try
+    {
+        minf = cOptimizer->run(xOpt);
+    }
+    catch (std::runtime_error &e)
+    {
+        FILE_LOG(logERROR) << "NLOPT Error: Runtime Error, General Failure in TGPOptimization::findOptimal.";
+
+        updatePosteriorModel();
+
+        findOptimal(xOpt); return;
+    }
 
     //Let's try some local exploration like spearmint
     randNFloat drawSample(mEngine,normalDist(0,0.001));
@@ -111,8 +125,8 @@ namespace bayesopt  {
 	  }
 	try
 	  {
-	    double minf2 = cOptimizer->localTrialAround(pert);	    
-	    if (minf2<minf) 
+	    double minf2 = cOptimizer->localTrialAround(pert);
+	    if (minf2<minf)
 	      {
 		minf = minf2;
 		FILE_LOG(logDEBUG) << "Local beats Global";
@@ -132,7 +146,7 @@ namespace bayesopt  {
   }
 
   void ContinuousModel::generateInitialPoints(matrixd& xPoints)
-  {   
+  {
     utils::samplePoints(xPoints,mParameters.init_method,mEngine);
   }
 }  //namespace bayesopt
