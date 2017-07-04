@@ -166,8 +166,9 @@ bopt_params initialize_parameters_to_default(void)
   mean.n_coef       = 1;
 
   input_parameters input;
-                   input.noise[0] = DEFAULT_INPUT_NOISE;
-                   input.n_coef   = 1;
+                   input.noise[0]        = DEFAULT_INPUT_NOISE;
+                   input.unscented_scale = 1;
+                   input.n_coef          = 1;
 
 
   bopt_params params;
@@ -210,9 +211,11 @@ bopt_params initialize_parameters_to_default(void)
   strcpy(params.crit_name,CRIT_NAME.c_str());
   params.n_crit_params = 0;
 
-  params.kernel = kernel;
-  params.mean = mean;
-  params.input = input;
+  params.kernel            = kernel;
+  params.mean              = mean;
+
+  params.input             = input;
+  params.unscented_outcome = false;
 
   return params;
 }
@@ -250,8 +253,9 @@ namespace bayesopt {
     noise_matrix(1,1)
     {
         noise_matrix(0,0) = DEFAULT_INPUT_NOISE;
+        unscented_scale   = 1;
     }
-    
+
     /*
      * Parameters Class
      */
@@ -308,6 +312,9 @@ namespace bayesopt {
 
         input.noise_matrix = bayesopt::utils::array2matrix(c_params.input.noise,
 						                                   c_params.input.n_coef);
+        input.unscented_scale = c_params.input.unscented_scale;
+
+        unscented_outcome = c_params.unscented_outcome;
         crit_name = c_params.crit_name;
         crit_params = bayesopt::utils::array2vector(c_params.crit_params,
 						    c_params.n_crit_params);
@@ -373,7 +380,10 @@ namespace bayesopt {
              c_params.input.noise[col + (row * input.noise_matrix.size1())] = input.noise_matrix(row,col);
          }
       }
+      c_params.input.unscented_scale = input.unscented_scale;
       c_params.input.n_coef = input.noise_matrix.size1() * input.noise_matrix.size2();
+      c_params.unscented_outcome = unscented_outcome;
+
       strcpy(c_params.crit_name, crit_name.c_str());
       for(size_t i=0; i<crit_params.size(); i++){
 	c_params.crit_params[i] = crit_params[i];
@@ -405,35 +415,37 @@ namespace bayesopt {
     }
 
     void Parameters::init_default(){
-        n_iterations = DEFAULT_ITERATIONS;
+        n_iterations       = DEFAULT_ITERATIONS;
         n_inner_iterations = DEFAULT_INNER_EVALUATIONS;
-        n_init_samples = DEFAULT_INIT_SAMPLES;
-        n_iter_relearn = DEFAULT_ITERATIONS_RELEARN;
+        n_init_samples     = DEFAULT_INIT_SAMPLES;
+        n_iter_relearn     = DEFAULT_ITERATIONS_RELEARN;
 
-        init_method = 1;
-        random_seed = -1;
+        init_method        =  1;
+        random_seed        = -1;
 
-        verbose_level = DEFAULT_VERBOSE;
-        log_filename = LOG_FILENAME;
+        verbose_level      = DEFAULT_VERBOSE;
+        log_filename       = LOG_FILENAME;
 
-        load_save_flag = 0;
-        load_filename = LOAD_FILENAME;
-        save_filename = SAVE_FILENAME;
+        load_save_flag     = 0;
+        load_filename      = LOAD_FILENAME;
+        save_filename      = SAVE_FILENAME;
 
-        surr_name = SURR_NAME;
+        surr_name          = SURR_NAME;
 
-        sigma_s = DEFAULT_SIGMA;
-        noise = DEFAULT_NOISE;
-        alpha = PRIOR_ALPHA;
-        beta = PRIOR_BETA;
+        sigma_s            = DEFAULT_SIGMA;
+        noise              = DEFAULT_NOISE;
+        alpha              = PRIOR_ALPHA;
+        beta               = PRIOR_BETA;
 
-        l_all = false;
-        l_type = L_EMPIRICAL;
-        sc_type = SC_MAP;
+        l_all              = false;
+        l_type             = L_EMPIRICAL;
+        sc_type            = SC_MAP;
 
-        epsilon = 0.0;
-        force_jump = 20;
+        epsilon            = 0.0;
+        force_jump         = 20;
 
-        crit_name = CRIT_NAME;
+        unscented_outcome  = false;
+
+        crit_name          = CRIT_NAME;
     }
 }//namespace bayesopt

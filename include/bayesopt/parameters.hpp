@@ -61,6 +61,7 @@ namespace bayesopt {
     {
     public:
         matrixd      noise_matrix;  /**< Input noise covariance matrix*/
+        double       unscented_scale;
 
         /* Class member functions */
         InputParameters(void);
@@ -114,6 +115,8 @@ namespace bayesopt {
         KernelParameters     kernel;         /**< Kernel parameters */
         MeanParameters       mean;           /**< Mean (parametric function) parameters */
         InputParameters      input;          /**< Input noise                parameters */
+
+        bool                 unscented_outcome;
 
         std::string crit_name;      /**< Name of the criterion */
         vectord crit_params;        /**< Criterion hyperparameters (if needed) */
