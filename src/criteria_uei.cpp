@@ -113,24 +113,7 @@ void UnscentedExpectedImprovement::setUncertaintyMatrix(const vectord& params)
         }
     }
 
-    // Scale Matrix
-    _px *= (_dim + _scale);
-
-    // Square root Matrix
-    if (!isDiag(_px))
-    {
-        matrixd L;
-        utils::cholesky_decompose(_px, L);
-
-        _px = L;
-    }
-    else
-    {
-        for (size_t idx = 0; idx < _px.size1(); ++idx)
-        {
-            _px(idx, idx) = std::sqrt(_px(idx, idx));
-        }
-    }
+    _px = UnscentedExpectedImprovement::convertMatrixNoise(_px, _scale, _dim);
 }
 
 
@@ -142,19 +125,7 @@ void UnscentedExpectedImprovement::setUncertaintyMatrix(const vectord& params)
  **************************************************************************************************/
 void UnscentedExpectedImprovement::getSamples(const vectord& x, std::vector<vectord>& xx, std::vector<double>& w)
 {
-    xx.clear();
-    w .clear();
-    xx.push_back(x);
-    w .push_back(_scale / (_dim + _scale));
-
-    // Calculate query_i
-    for (uint column = 0; column < _px.size2(); column += 1)
-    {
-        xx.push_back(x - boost::numeric::ublas::column(_px, column));
-        xx.push_back(x + boost::numeric::ublas::column(_px, column));
-        w .push_back(0.5 / (_dim + _scale));
-        w .push_back(0.5 / (_dim + _scale));
-    }
+    UnscentedExpectedImprovement::getSigmaPoints(x, _scale, _dim, _px, xx, w, false);
 }
 
 
@@ -230,7 +201,7 @@ bool UnscentedExpectedImprovement::isDiag(matrixd matrix)
             {
                 if (row != col)
                 {
-                    if (std::abs(matrix(row, col)) < std::numeric_limits<double>::epsilon())
+                    if (std::abs(matrix(row, col)) > std::numeric_limits<double>::epsilon())
                     {
                         return false;
                     }
@@ -241,6 +212,38 @@ bool UnscentedExpectedImprovement::isDiag(matrixd matrix)
     }
 
     return false;
+}
+
+
+/**
+ *
+ */
+matrixd UnscentedExpectedImprovement::convertMatrixNoise(const matrixd& matrix,
+                                                         const double   scale ,
+                                                         const int      dim   )
+{
+    matrixd matrix_output = matrix;
+
+    // Scale Matrix
+    matrix_output *= (dim + scale);
+
+    // Square root Matrix
+    if (!isDiag(matrix_output))
+    {
+        matrixd L;
+        utils::cholesky_decompose(matrix_output, L);
+
+        matrix_output = L;
+    }
+    else
+    {
+        for (size_t idx = 0; idx < matrix_output.size1(); ++idx)
+        {
+            matrix_output(idx, idx) = std::sqrt(matrix_output(idx, idx));
+        }
+    }
+
+    return matrix_output;
 }
 
 
@@ -288,6 +291,47 @@ void UnscentedExpectedImprovement::convertMatrixToParams(Parameters& params, con
         {
             params.crit_params[4 + col + (row * dim)] = px(row, col);
         }
+    }
+}
+
+
+/**************************************************************************************************
+ *  Procedure                                                                                     *
+ *                                                                                                *
+ *  Description: getSigmaPoints                                                                   *
+ *  Class      : UnscentedExpectedImprovement                                                     *
+ **************************************************************************************************/
+void UnscentedExpectedImprovement::getSigmaPoints(const vectord&          x             ,
+                                                  const double            scale         ,
+                                                  const int               dim           ,
+                                                  const matrixd&          matrix_noise  ,
+                                                  std::vector<vectord>&   xx            ,
+                                                  std::vector<double>&    w             ,
+                                                  const bool              matrix_convert)
+{
+    const size_t n = dim;
+
+    assert(matrix_noise.size1() == n);
+    assert(matrix_noise.size2() == n);
+    assert(x.size()             == n);
+
+    matrixd px;
+    if (matrix_convert) px = UnscentedExpectedImprovement::convertMatrixNoise(matrix_noise, scale, dim);
+    else                px = matrix_noise;
+
+    // Output variable intialization
+    xx = std::vector<vectord>();
+    w  = std::vector<double>();
+    xx.push_back(x);
+    w .push_back(scale / (dim + scale));
+
+    // Calculate query_i
+    for (size_t col = 0; col < n; col += 1)
+    {
+        xx.push_back(x - boost::numeric::ublas::column(px, col));
+        xx.push_back(x + boost::numeric::ublas::column(px, col));
+        w .push_back(0.5 / (dim + scale));
+        w .push_back(0.5 / (dim + scale));
     }
 }
 

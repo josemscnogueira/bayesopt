@@ -33,8 +33,18 @@ public:
     void        getSamples          (const vectord& x, std::vector<vectord>& xx, std::vector<double>& w);
 
     // Static mathods
-    static void convertMatrixToParams(bopt_params& params, const matrixd px);
-    static void convertMatrixToParams(Parameters&  params, const matrixd px);
+    static matrixd convertMatrixNoise(   const matrixd& matrix,
+                                         const double   scale ,
+                                         const int      dim   );
+    static void    convertMatrixToParams(bopt_params&            params, const matrixd px);
+    static void    convertMatrixToParams(Parameters&             params, const matrixd px);
+    static void    getSigmaPoints(       const vectord&          x           ,
+                                         const double            scale       ,
+                                         const int               dim         ,
+                                         const matrixd&          matrix_noise,
+                                         std::vector<vectord>&   xx          ,
+                                         std::vector<double>&    w           ,
+                                         const bool              matrix_convert = true);
 
 private:
     // Attributes
@@ -45,8 +55,9 @@ private:
     double    _alpha;     // parameters(3)
 
     // Methods
-    bool isDiag              (const matrixd  matrix);
-    void setUncertaintyMatrix(const vectord& params);
+    void    setUncertaintyMatrix(const vectord& params);
+
+    static bool isDiag(const matrixd  matrix);
 };
 
 inline size_t UnscentedExpectedImprovement::nParameters() { return (2 + _criteria -> nParameters() + (_dim * _dim)); };
