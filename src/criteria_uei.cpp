@@ -70,7 +70,7 @@ void UnscentedExpectedImprovement::init(NonParametricProcess* proc)
     if (_criteria == NULL)
     {
         _criteria = new BiasedExpectedImprovement();
-        _criteria -> init(proc);
+        _criteria->init(proc);
     }
 }
 
@@ -85,7 +85,7 @@ void UnscentedExpectedImprovement::setParameters(const vectord& params)
 {
     if (_criteria != NULL) _criteria -> setParameters(params);
 
-    if (params(2)  < 0) _scale = 3 - _dim;
+    if (params(2) <  0) _scale = 3 - _dim;
     else                _scale = params(2);
 
     if (params(3) >= 0) _alpha = params(3);
@@ -105,11 +105,11 @@ void UnscentedExpectedImprovement::setUncertaintyMatrix(const vectord& params)
     // Uncertainty Matrix Initialization
     _px = matrixd(_dim, _dim);
 
-    for     (uint row = 0; row < _dim; row += 1)
+    for (size_t row = 0; row < _dim; ++row)
     {
-        for (uint col = 0; col < _dim; col += 1)
+        for (size_t col = 0; col < _dim; ++col)
         {
-            _px(row, col) = params( 4 + col + (row * _dim) );
+            _px(row, col) = params(4 + col + (row * _dim));
         }
     }
 
@@ -120,16 +120,15 @@ void UnscentedExpectedImprovement::setUncertaintyMatrix(const vectord& params)
     if (!isDiag(_px))
     {
         matrixd L;
-
         utils::cholesky_decompose(_px, L);
 
         _px = L;
     }
     else
     {
-        for (uint index = 0; index < _px.size1(); index += 1)
+        for (size_t idx = 0; idx < _px.size1(); ++idx)
         {
-            _px(index, index) = std::sqrt(_px(index, index));
+            _px(idx, idx) = std::sqrt(_px(idx, idx));
         }
     }
 }
@@ -174,34 +173,34 @@ double UnscentedExpectedImprovement::operator() (const vectord& x)
                          xx.push_back(x);
 
     // Calculate query_i
-    for (uint column = 0; column < _px.size2(); column += 1)
+    for (size_t column = 0; column < _px.size2(); ++column)
     {
         xx.push_back(x - boost::numeric::ublas::column(_px, column));
         xx.push_back(x + boost::numeric::ublas::column(_px, column));
     }
 
     // Calculate EI_i and E[UEI]
-    for (uint index = 0; index < xx.size(); index += 1)
+    for (size_t idx = 0; idx < xx.size(); ++idx)
     {
         // Calculate ei_i according to underlying _criteria
-        ei_i.push_back( (*_criteria)(xx[index]) );
+        ei_i.push_back( (*_criteria)(xx[idx]) );
 
-        FILE_LOG(logDEBUG) << "cUEI Query " << index << " = " << xx[index];
+        FILE_LOG(logDEBUG) << "cUEI Query " << idx << " = " << xx[idx];
 
         // e_uei = sum_{i=0}^{2_dim+1} (ei_i * w_i)
-        if (index == 0) e_uei += ei_i[index] * ( _scale / (_dim + _scale) );
-        else            e_uei += ei_i[index] * (  0.5   / (_dim + _scale) );
+        if (idx == 0) e_uei += ei_i[idx] * ( _scale / (_dim + _scale) );
+        else          e_uei += ei_i[idx] * (  0.5   / (_dim + _scale) );
     }
 
     // Normalize e_uei
     e_uei /= xx.size();
 
     // Calculate V[UEI]
-    for (uint index = 0; index < xx.size(); index += 1)
+    for (size_t idx = 0; idx < xx.size(); idx += 1)
     {
         // d_uei = sum_{i=0}^{2_dim+1} ( (ei_i-e_uei)^2 * w_i)
-        if (index == 0) d_uei += ( ei_i[index] - e_uei ) * ( ei_i[index] - e_uei ) * ( _scale / (_dim + _scale) );
-        else            d_uei += ( ei_i[index] - e_uei ) * ( ei_i[index] - e_uei ) * (  0.5   / (_dim + _scale) );
+        if (idx == 0) d_uei += ( ei_i[idx] - e_uei ) * ( ei_i[idx] - e_uei ) * ( _scale / (_dim + _scale) );
+        else          d_uei += ( ei_i[idx] - e_uei ) * ( ei_i[idx] - e_uei ) * (  0.5   / (_dim + _scale) );
     }
 
     // Normalize d_uei
@@ -225,25 +224,17 @@ bool UnscentedExpectedImprovement::isDiag(matrixd matrix)
 {
     if (matrix.size1() == matrix.size2())
     {
-        for (    uint row = 0; row < matrix.size1(); row += 1)
+        for (size_t row = 0; row < matrix.size1(); ++row)
         {
-            for (uint col = 0; col < matrix.size2(); col += 1)
+            for (size_t col = 0; col < matrix.size2(); ++col)
             {
-                if (row != col)
+                if ( (row != col) && (matrix(row, col) != 0.0) )
                 {
-                    if (matrix(row, col) != 0.0)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
         }
-
         return true;
-    }
-    else
-    {
-        return false;
     }
 
     return false;
@@ -260,11 +251,11 @@ void UnscentedExpectedImprovement::convertMatrixToParams(bopt_params& params, co
 {
     if (px.size1() != px.size2()) return;
 
-    uint dim = px.size1();
+    size_t dim = px.size1();
 
-    for     (uint row = 0; row < dim; row += 1)
+    for (size_t row = 0; row < dim; ++row)
     {
-        for (uint col = 0; col < dim; col += 1)
+        for (size_t col = 0; col < dim; ++col)
         {
             params.crit_params[4 + col + (row * dim)] = px(row, col);
             params.input.noise[0 + col + (row * dim)] = px(row, col);
@@ -283,14 +274,14 @@ void UnscentedExpectedImprovement::convertMatrixToParams(Parameters& params, con
 {
     if (px.size1() != px.size2()) return;
 
-    uint dim = px.size1();
+    size_t dim = px.size1();
 
     params.input.noise_matrix = px;
     params.crit_params.resize(4+dim*dim, true);
 
-    for     (uint row = 0; row < dim; row += 1)
+    for (size_t row = 0; row < dim; ++row)
     {
-        for (uint col = 0; col < dim; col += 1)
+        for (size_t col = 0; col < dim; ++col)
         {
             params.crit_params[4 + col + (row * dim)] = px(row, col);
         }
