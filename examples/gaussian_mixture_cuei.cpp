@@ -36,13 +36,14 @@ int main(int nargs, char *args[])
 
     // Optimization and fuction params
     par.n_init_samples    =  30;
-    par.n_iterations      = 150 - par.n_init_samples;
+    par.n_iterations      =  90;
     par.random_seed       =   0;
     par.verbose_level     =   1;
     par.noise             = 1e-10;
     par.sigma_s           =   0.0642;
 
     // Learning params
+    par.unscented_outcome = true;
     par.n_iter_relearn    = 1;
     par.init_method       = 1;
     par.l_type            = L_MCMC;
@@ -59,10 +60,11 @@ int main(int nargs, char *args[])
     par.crit_params[3]    = 0.00; // alpha
 
     // Create input space noise matrix
-    matrixd px = boost::numeric::ublas::identity_matrix<double>(2) * 0.02; // Input space is normalized
+    matrixd px = boost::numeric::ublas::identity_matrix<double>(2) * 0.01; // Input space is normalized
 
     // Update BayesOpt params according to that matrix
     bayesopt::UnscentedExpectedImprovement::convertMatrixToParams(par, px);
+    par.input.unscented_scale = par.crit_params[2];
 
     // Initialize optimization variables
     GaussianMixture2DNormalized gm_opt(par);
