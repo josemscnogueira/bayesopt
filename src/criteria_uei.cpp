@@ -228,9 +228,12 @@ bool UnscentedExpectedImprovement::isDiag(matrixd matrix)
         {
             for (size_t col = 0; col < matrix.size2(); ++col)
             {
-                if ( (row != col) && (matrix(row, col) != 0.0) )
+                if (row != col)
                 {
-                    return false;
+                    if (std::abs(matrix(row, col)) < std::numeric_limits<double>::epsilon())
+                    {
+                        return false;
+                    }
                 }
             }
         }
