@@ -1,17 +1,17 @@
 /**  \file posteriormodel.hpp \brief Abstract interface for posterior model/criteria */
 /*
 -------------------------------------------------------------------------
-   This file is part of BayesOpt, an efficient C++ library for 
+   This file is part of BayesOpt, an efficient C++ library for
    Bayesian optimization.
 
    Copyright (C) 2011-2015 Ruben Martinez-Cantin <rmcantin@unizar.es>
- 
-   BayesOpt is free software: you can redistribute it and/or modify it 
+
+   BayesOpt is free software: you can redistribute it and/or modify it
    under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   BayesOpt is distributed in the hope that it will be useful, but 
+   BayesOpt is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
@@ -37,27 +37,27 @@ namespace bayesopt {
   /*@{*/
 
  /**
-   * \brief Bayesian optimization using different non-parametric 
-   * processes as distributions over surrogate functions. 
+   * \brief Bayesian optimization using different non-parametric
+   * processes as distributions over surrogate functions.
    */
   class PosteriorModel
   {
   public:
-    static PosteriorModel* create(size_t dim, Parameters params, 
+    static PosteriorModel* create(size_t dim, Parameters params,
 				  randEngine& eng);
 
-    /** 
+    /**
      * Constructor
      * @param params set of parameters (see parameters.hpp)
      */
     PosteriorModel(size_t dim, Parameters params, randEngine& eng);
 
-    /** 
+    /**
      * Default destructor
      */
     virtual ~PosteriorModel();
 
-   
+
     virtual void updateHyperParameters() = 0;
     virtual void fitSurrogateModel() = 0;
     virtual void updateSurrogateModel() = 0;
@@ -79,6 +79,11 @@ namespace bayesopt {
     double getValueAtMinimum();
     vectord getPointAtMinimum();
 
+    // Unscented Outcome functions
+    double  getValueUnscented(         const vectord& x);
+    double  getValueAtMinimumUnscented(void);
+    vectord getPointAtMinimumUnscented(void);
+
     void plotDataset(TLogLevel level);
 
     const Dataset* getData();
@@ -95,11 +100,11 @@ namespace bayesopt {
     PosteriorModel();
   };
 
-  inline vectord PosteriorModel::getPointAtMinimum() 
-  { return mData.getPointAtMinimum(); };
-  
+  inline vectord PosteriorModel::getPointAtMinimum()
+  { return (mParameters.unscented_outcome ? this->getPointAtMinimumUnscented() : mData.getPointAtMinimum()); };
+
   inline double PosteriorModel::getValueAtMinimum()
-  { return mData.getValueAtMinimum(); };
+  { return (mParameters.unscented_outcome ? this->getValueAtMinimumUnscented() : mData.getValueAtMinimum()); };
 
   inline void PosteriorModel::plotDataset(TLogLevel level)
   { mData.plotData(level); }
